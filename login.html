@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Voklo — Sign In</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Instrument Sans',sans-serif;background:#0C0C0C;color:#F2F2F0;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;-webkit-font-smoothing:antialiased}
+.wrap{width:100%;max-width:420px}
+.logo{font-family:'Syne',sans-serif;font-weight:900;font-size:28px;color:#3B82F6;letter-spacing:-1px;margin-bottom:8px;text-align:center}
+.sub{text-align:center;color:#5A5A54;font-size:14px;font-weight:500;margin-bottom:40px}
+.card{background:#111;border:1px solid #222;border-radius:16px;padding:32px}
+.tab-row{display:flex;gap:4px;background:#0C0C0C;border-radius:10px;padding:4px;margin-bottom:28px}
+.tab{flex:1;padding:8px;border-radius:8px;border:none;background:transparent;color:#5A5A54;font-family:'Instrument Sans',sans-serif;font-size:13.5px;font-weight:600;cursor:pointer;transition:all .15s}
+.tab.on{background:#161616;color:#F2F2F0;box-shadow:0 1px 3px rgba(0,0,0,.4)}
+.field{margin-bottom:16px}
+.lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#5A5A54;margin-bottom:7px;display:block}
+input{width:100%;background:#161616;border:1px solid #2A2A2A;border-radius:10px;color:#F2F2F0;font-family:'Instrument Sans',sans-serif;font-size:14px;font-weight:500;padding:12px 14px;outline:none;transition:all .15s}
+input:focus{border-color:#3B82F6;box-shadow:0 0 0 3px rgba(59,130,246,.12)}
+.btn{width:100%;padding:13px;background:#3B82F6;color:white;border:none;border-radius:10px;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;cursor:pointer;transition:all .15s;margin-top:4px;box-shadow:0 2px 12px rgba(59,130,246,.3)}
+.btn:hover{background:#2563EB;transform:translateY(-1px);box-shadow:0 4px 20px rgba(59,130,246,.4)}
+.btn:disabled{background:rgba(59,130,246,.3);color:rgba(59,130,246,.5);cursor:not-allowed;transform:none;box-shadow:none}
+.msg{padding:12px 14px;border-radius:9px;font-size:13px;font-weight:600;margin-bottom:16px;display:none}
+.msg.err{background:rgba(239,68,68,.1);color:#EF4444;border:1px solid rgba(239,68,68,.2)}
+.msg.ok{background:rgba(34,197,94,.1);color:#22C55E;border:1px solid rgba(34,197,94,.2)}
+.msg.show{display:block}
+.sp{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.divider{display:flex;align-items:center;gap:10px;margin:20px 0;color:#3A3A38;font-size:12px;font-weight:600}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:#222}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="logo">Voklo</div>
+  <div class="sub">Social media on autopilot</div>
+  <div class="card">
+    <div class="tab-row">
+      <button class="tab on" id="tab-in" onclick="switchTab('in')">Sign In</button>
+      <button class="tab" id="tab-up" onclick="switchTab('up')">Create Account</button>
+    </div>
+
+    <div id="msg" class="msg"></div>
+
+    <!-- SIGN IN -->
+    <div id="form-in">
+      <div class="field"><label class="lbl">Email</label><input type="email" id="in-email" placeholder="you@yourbusiness.com"/></div>
+      <div class="field"><label class="lbl">Password</label><input type="password" id="in-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')signIn()"/></div>
+      <button class="btn" id="in-btn" onclick="signIn()">Sign In →</button>
+    </div>
+
+    <!-- CREATE ACCOUNT -->
+    <div id="form-up" style="display:none">
+      <div class="field"><label class="lbl">Email</label><input type="email" id="up-email" placeholder="you@yourbusiness.com"/></div>
+      <div class="field"><label class="lbl">Password</label><input type="password" id="up-pass" placeholder="At least 6 characters"/></div>
+      <div class="field"><label class="lbl">Business Name</label><input type="text" id="up-biz" placeholder="e.g. Tony's Italian Kitchen"/></div>
+      <button class="btn" id="up-btn" onclick="signUp()">Create Account →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const sb = supabase.createClient(
+  'https://tptfzzamwthbcnzfmusj.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRwdGZ6emFtd3RoYmNuemZtdXNqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4ODYxNzMsImV4cCI6MjA5MjQ2MjE3M30.9QCuNGKM8DOta3CWVs2QFpb_nR8mqZCEyQ87vmYiqTo'
+);
+
+// Check if already logged in
+sb.auth.getSession().then(({data:{session}})=>{
+  if(session) window.location.href='/app.html';
+});
+
+function switchTab(t){
+  document.getElementById('tab-in').classList.toggle('on',t==='in');
+  document.getElementById('tab-up').classList.toggle('on',t==='up');
+  document.getElementById('form-in').style.display=t==='in'?'block':'none';
+  document.getElementById('form-up').style.display=t==='up'?'block':'none';
+  showMsg('','');
+}
+
+function showMsg(text,type){
+  const el=document.getElementById('msg');
+  el.textContent=text;
+  el.className='msg'+(type?' '+type+' show':'');
+}
+
+async function signIn(){
+  const email=document.getElementById('in-email').value.trim();
+  const pass=document.getElementById('in-pass').value;
+  if(!email||!pass){showMsg('Please fill in all fields.','err');return}
+  const btn=document.getElementById('in-btn');
+  btn.disabled=true;btn.innerHTML='<span class="sp"></span>';
+  const{error}=await sb.auth.signInWithPassword({email,password:pass});
+  if(error){showMsg(error.message,'err');btn.disabled=false;btn.textContent='Sign In →';return}
+  window.location.href='/app.html';
+}
+
+async function signUp(){
+  const email=document.getElementById('up-email').value.trim();
+  const pass=document.getElementById('up-pass').value;
+  const biz=document.getElementById('up-biz').value.trim();
+  if(!email||!pass||!biz){showMsg('Please fill in all fields.','err');return}
+  if(pass.length<6){showMsg('Password must be at least 6 characters.','err');return}
+  const btn=document.getElementById('up-btn');
+  btn.disabled=true;btn.innerHTML='<span class="sp"></span>';
+  const{data,error}=await sb.auth.signUp({email,password:pass});
+  if(error){showMsg(error.message,'err');btn.disabled=false;btn.textContent='Create Account →';return}
+  // Save biz name to users table
+  if(data.user){
+    await sb.from('users').upsert({id:data.user.id,email,biz_name:biz,created_at:new Date().toISOString()});
+  }
+  showMsg('Account created! Signing you in...','ok');
+  setTimeout(()=>window.location.href='/app.html',1200);
+}
+</script>
+</body>
+</html>
