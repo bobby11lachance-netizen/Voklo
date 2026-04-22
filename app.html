@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Voklo</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800;900&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  --bg:#0C0C0C;
+  --surface:#111111;
+  --card:#161616;
+  --card2:#1C1C1C;
+  --border:#222222;
+  --border2:#2A2A2A;
+  --accent:#3B82F6;
+  --accent-dim:rgba(59,130,246,0.12);
+  --accent-mid:rgba(59,130,246,0.25);
+  --blue:#3B82F6;
+  --blue-dim:rgba(59,130,246,0.12);
+  --green:#22C55E;
+  --green-dim:rgba(34,197,94,0.1);
+  --red:#EF4444;
+  --red-dim:rgba(239,68,68,0.1);
+  --text:#F2F2F0;
+  --text2:#A0A09A;
+  --text3:#5A5A54;
+  --r:14px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{font-family:'Instrument Sans',sans-serif;background:var(--bg);color:var(--text);font-size:14px;-webkit-font-smoothing:antialiased}
+
+/* ── LAYOUT ── */
+.shell{display:flex;height:100vh}
+
+/* ── SIDEBAR ── */
+.side{
+  width:200px;min-width:200px;
+  background:var(--surface);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;
+  align-items:center;
+  padding:20px 0;
+  gap:4px;
+  
+  overflow:hidden;
+  position:relative;
+  z-index:10;
+}
+
+
+
+.side-logo{
+  display:flex;align-items:center;gap:10px;
+  padding:0 18px;
+  width:220px;
+  margin-bottom:16px;
+  flex-shrink:0;
+}
+
+.logo-mark{
+  width:28px;height:28px;min-width:28px;
+  background:var(--accent);
+  border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Syne',sans-serif;font-weight:900;font-size:13px;color:#000;
+}
+
+.logo-text{
+  font-family:'Syne',sans-serif;font-weight:800;font-size:16px;
+  color:var(--text);letter-spacing:-0.3px;
+}
+
+
+
+.nav-item{
+  display:flex;align-items:center;gap:12px;
+  width:220px;
+  padding:10px 18px;
+  border-radius:10px;
+  margin:0 8px;
+  width:calc(220px - 16px);
+  cursor:pointer;
+  border:none;background:none;
+  color:var(--text3);
+  font-family:'Instrument Sans',sans-serif;
+  font-size:13.5px;font-weight:500;
+  text-align:left;
+  transition:all 0.15s;
+  white-space:nowrap;
+  flex-shrink:0;
+}
+
+.nav-item:hover{background:var(--card);color:var(--text2)}
+.nav-item.on{background:var(--accent-dim);color:var(--accent)}
+
+.nav-icon{
+  width:20px;height:20px;min-width:20px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;
+}
+
+.nav-label{}
+
+
+.nav-divider{height:1px;background:var(--border);margin:8px 18px;}
+
+
+.side-bottom{margin-top:auto;width:220px;padding:0 8px}
+
+.biz-pill{
+  background:var(--card);
+  border:1px solid var(--border2);
+  border-radius:10px;
+  padding:10px 12px;
+  display:flex;align-items:center;gap:10px;
+}
+
+.biz-dot{
+  width:8px;height:8px;min-width:8px;
+  border-radius:50%;background:var(--accent);
+  box-shadow:0 0 8px var(--accent);
+  animation:glow 2s ease infinite;
+}
+@keyframes glow{0%,100%{opacity:1}50%{opacity:0.4}}
+
+.biz-info{min-width:0;flex:1}
+
+.biz-name{font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.biz-plan{font-size:10px;color:var(--text3);font-weight:500}
+
+/* ── MAIN ── */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+
+.topbar{
+  height:56px;flex-shrink:0;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;
+  padding:0 28px;gap:16px;
+  background:var(--surface);
+}
+
+.topbar-title{
+  font-family:'Syne',sans-serif;
+  font-weight:700;font-size:15px;
+  color:var(--text);flex:1;
+}
+
+.topbar-badge{
+  background:var(--accent-dim);
+  border:1px solid var(--accent-mid);
+  color:var(--accent);
+  font-size:11px;font-weight:700;
+  padding:3px 10px;border-radius:20px;
+}
+
+/* ── CONTENT ── */
+.content{flex:1;overflow-y:auto;padding:28px}
+
+/* Scrollbar */
+.content::-webkit-scrollbar{width:4px}
+.content::-webkit-scrollbar-track{background:transparent}
+.content::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+
+.page{display:none}
+.page.on{display:block;animation:fadeIn 0.2s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── CARDS ── */
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  padding:22px;
+  margin-bottom:16px;
+}
+
+.card-glass{
+  background:linear-gradient(135deg,rgba(255,255,255,0.03) 0%,rgba(255,255,255,0.01) 100%);
+  backdrop-filter:blur(10px);
+  border:1px solid var(--border2);
+  border-radius:var(--r);
+  padding:22px;
+  margin-bottom:16px;
+}
+
+.ctitle{
+  font-family:'Syne',sans-serif;
+  font-size:13px;font-weight:700;
+  color:var(--text2);
+  text-transform:uppercase;letter-spacing:0.08em;
+  margin-bottom:18px;
+  display:flex;align-items:center;gap:8px;
+}
+
+/* ── STAT STRIP ── */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+
+.stat{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  padding:20px;
+  position:relative;
+  overflow:hidden;
+  transition:border-color 0.2s;
+}
+
+.stat::before{
+  content:'';position:absolute;
+  top:-40px;right:-40px;
+  width:100px;height:100px;
+  border-radius:50%;
+  background:var(--accent);
+  opacity:0.03;
+}
+
+.stat:hover{border-color:var(--border2)}
+
+.stat-val{
+  font-family:'Syne',sans-serif;
+  font-weight:900;font-size:36px;
+  color:var(--accent);line-height:1;
+  margin-bottom:6px;
+  letter-spacing:-1px;
+}
+
+.stat-lbl{font-size:11.5px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em}
+
+/* ── GRID ── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.sched-g{display:grid;grid-template-columns:1fr 280px;gap:16px}
+
+/* ── INPUTS ── */
+.lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);margin-bottom:7px;display:block}
+
+input[type=text],input[type=email],input[type=time]{
+  width:100%;background:var(--surface);
+  border:1px solid var(--border2);border-radius:10px;
+  color:var(--text);font-family:'Instrument Sans',sans-serif;
+  font-size:14px;font-weight:500;padding:11px 14px;
+  outline:none;transition:all 0.15s;
+}
+input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-dim)}
+
+select{
+  width:100%;background:var(--surface);
+  border:1px solid var(--border2);border-radius:10px;
+  color:var(--text);font-family:'Instrument Sans',sans-serif;
+  font-size:14px;font-weight:500;padding:11px 14px;
+  outline:none;appearance:none;cursor:pointer;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath fill='%235A5A54' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 14px center;
+  padding-right:36px;transition:all 0.15s;
+}
+select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-dim);background-color:var(--surface)}
+select option{background:var(--card)}
+
+textarea{
+  width:100%;background:var(--surface);
+  border:1px solid var(--border2);border-radius:10px;
+  color:var(--text);font-family:'Instrument Sans',sans-serif;
+  font-size:14px;font-weight:500;padding:12px 14px;
+  resize:vertical;outline:none;line-height:1.65;
+  transition:all 0.15s;
+}
+textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-dim)}
+
+.field{margin-bottom:16px}
+
+/* ── DROP ZONE ── */
+.dz{
+  border:1.5px dashed var(--border2);
+  border-radius:12px;padding:44px 24px;
+  text-align:center;cursor:pointer;
+  transition:all 0.2s;background:var(--surface);
+}
+.dz:hover,.dz.over{border-color:var(--accent);background:var(--accent-dim)}
+.dz-icon{width:56px;height:56px;background:var(--card);border:1px solid var(--border2);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;margin:0 auto 14px}
+.dz-title{font-size:15px;font-weight:700;margin-bottom:4px;color:var(--text)}
+.dz-sub{font-size:13px;color:var(--text3);font-weight:500}
+
+/* ── PHOTO GRID ── */
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px;margin-top:18px}
+.pitem{position:relative;border-radius:10px;overflow:hidden;aspect-ratio:1;border:1.5px solid var(--border);transition:all 0.15s;cursor:default}
+.pitem:hover{border-color:var(--border2)}
+.pitem.queued{opacity:0.4}
+.pitem img{width:100%;height:100%;object-fit:cover;display:block}
+.pstatus{position:absolute;bottom:0;left:0;right:0;padding:4px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;text-align:center}
+.ps-r{background:var(--accent);color:#000}
+.ps-s{background:var(--green);color:#000}
+.prem{position:absolute;top:5px;right:5px;width:20px;height:20px;background:rgba(0,0,0,0.7);border:none;border-radius:6px;color:var(--text2);font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.15s}
+.pitem:hover .prem{opacity:1}
+
+.lib-row{display:flex;gap:16px;margin-bottom:16px}
+.lib-stat{font-size:13px;font-weight:600;color:var(--text3);display:flex;align-items:center;gap:6px}
+.ld{width:7px;height:7px;border-radius:50%}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:10px 18px;border-radius:10px;font-size:13.5px;font-weight:700;cursor:pointer;border:none;font-family:'Instrument Sans',sans-serif;transition:all 0.15s;letter-spacing:-0.1px}
+
+.btn-accent{background:var(--accent);color:#fff;box-shadow:0 0 20px rgba(200,241,53,0.2)}
+.btn-accent:hover{background:#d4f545;transform:translateY(-1px);box-shadow:0 4px 24px rgba(200,241,53,0.3)}
+.btn-accent:disabled{background:rgba(200,241,53,0.2);color:rgba(200,241,53,0.4);cursor:not-allowed;transform:none;box-shadow:none}
+
+.btn-ghost{background:transparent;color:var(--text3);border:1px solid var(--border2)}
+.btn-ghost:hover{color:var(--text2);border-color:var(--border2);background:var(--card)}
+
+.btn-danger{background:var(--red-dim);color:var(--red);border:1px solid rgba(239,68,68,0.2)}
+.btn-danger:hover{background:rgba(239,68,68,0.2)}
+
+.btn-full{width:100%;justify-content:center}
+.btn-sm{padding:6px 12px;font-size:12px;border-radius:8px}
+.btn-row{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap;align-items:center}
+
+/* ── DAYS ── */
+.days{display:flex;gap:6px}
+.day{width:42px;height:42px;border-radius:10px;border:1.5px solid var(--border2);background:var(--surface);color:var(--text3);font-size:11px;font-weight:700;cursor:pointer;font-family:'Instrument Sans',sans-serif;display:flex;align-items:center;justify-content:center;transition:all 0.15s}
+.day:hover{border-color:var(--accent);color:var(--accent)}
+.day.on{border-color:var(--accent);background:var(--accent);color:#fff;box-shadow:0 2px 12px rgba(200,241,53,0.25)}
+
+/* ── PLATFORMS ── */
+.plats{display:flex;gap:7px;flex-wrap:wrap}
+.plat{display:flex;align-items:center;gap:7px;padding:8px 14px;border-radius:9px;border:1.5px solid var(--border2);background:var(--surface);color:var(--text3);font-size:13px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:all 0.15s}
+.plat:hover{border-color:var(--border2);color:var(--text2)}
+.plat.on{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
+
+/* ── TONES ── */
+.tones{display:flex;gap:6px;flex-wrap:wrap}
+.tone{padding:7px 14px;border-radius:20px;border:1.5px solid var(--border2);background:var(--surface);color:var(--text3);font-size:13px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:all 0.15s}
+.tone:hover{border-color:var(--border2);color:var(--text2)}
+.tone.on{border-color:var(--accent);background:var(--accent);color:#fff}
+
+/* ── SCHEDULE PREVIEW ── */
+.sched-preview{
+  background:var(--accent-dim);border:1px solid var(--accent-mid);
+  border-radius:10px;padding:14px 16px;
+  font-size:13.5px;font-weight:600;color:var(--accent);
+  line-height:1.65;margin-bottom:16px;
+}
+
+/* ── LIVE BANNER ── */
+.live{display:flex;align-items:center;gap:10px;padding:13px 16px;border-radius:11px;font-size:13.5px;font-weight:600;margin-bottom:18px}
+.live-go{background:var(--green-dim);color:var(--green);border:1px solid rgba(34,197,94,0.2)}
+.pulse{width:8px;height:8px;min-width:8px;border-radius:50%;background:currentColor;animation:pulse 1.5s ease infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.3;transform:scale(0.6)}}
+
+/* ── POSTS ── */
+.plist{display:flex;flex-direction:column}
+.pitem2{display:flex;align-items:flex-start;gap:14px;padding:14px 0;border-bottom:1px solid var(--border)}
+.pitem2:last-child{border-bottom:none;padding-bottom:0}
+.pthumb{width:56px;height:56px;border-radius:9px;object-fit:cover;border:1px solid var(--border);flex-shrink:0}
+.pmeta{font-size:10.5px;font-weight:700;color:var(--text3);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.05em}
+.pcap{font-size:13px;color:var(--text2);line-height:1.55;font-weight:500;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.pbadge{font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:20px;flex-shrink:0;display:inline-flex;align-items:center}
+.pb-g{background:var(--green-dim);color:var(--green)}
+.pb-b{background:var(--blue-dim);color:var(--blue)}
+
+/* ── CALENDAR ── */
+.cal-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.cal-m{font-family:'Syne',sans-serif;font-size:16px;font-weight:800}
+.cal-nav-btn{background:var(--surface);border:1px solid var(--border2);color:var(--text3);border-radius:8px;padding:7px 14px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:all 0.15s}
+.cal-nav-btn:hover{border-color:var(--accent);color:var(--accent)}
+.cgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cdname{text-align:center;font-size:10px;font-weight:700;color:var(--text3);padding:3px 0 10px;text-transform:uppercase;letter-spacing:0.07em}
+.ccell{aspect-ratio:1;border-radius:9px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:13px;font-weight:600;border:1.5px solid transparent;min-height:46px;transition:all 0.12s}
+.ccell.other{color:var(--text3);opacity:0.3}
+.ccell.today{border-color:var(--accent);background:var(--accent-dim);color:var(--accent)}
+.ccell.haspost{background:var(--green-dim);border-color:rgba(34,197,94,0.25)}
+.cdot{width:5px;height:5px;border-radius:50%;background:var(--green);margin-top:3px}
+
+/* ── OUTPUT ── */
+.out-box{
+  background:var(--surface);border:1px solid var(--border2);
+  border-radius:10px;padding:16px;
+  font-size:14px;line-height:1.75;
+  color:var(--text);white-space:pre-wrap;font-weight:500;
+  margin-top:14px;
+}
+
+.out-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+
+.copy-btn{background:var(--accent-dim);color:var(--accent);border:none;border-radius:7px;padding:4px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:all 0.15s}
+.copy-btn:hover{background:var(--accent-mid)}
+
+/* ── SENTIMENT ── */
+.sent{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px}
+.s-pos{background:var(--green-dim);color:var(--green)}
+.s-neg{background:var(--red-dim);color:var(--red)}
+.s-neu{background:rgba(251,191,36,0.1);color:#FBBF24}
+
+/* ── EMPTY ── */
+.empty{text-align:center;padding:48px 24px}
+.ei{font-size:36px;margin-bottom:12px;opacity:0.4}
+.et{font-size:15px;font-weight:700;color:var(--text3);margin-bottom:5px}
+.es{font-size:13px;color:var(--text3);line-height:1.6}
+.el{color:var(--accent);cursor:pointer;font-weight:600}
+
+/* ── SETTINGS ── */
+.srow{display:flex;align-items:center;justify-content:space-between;padding:15px 0;border-bottom:1px solid var(--border)}
+.srow:last-child{border-bottom:none}
+.slbl{font-size:14px;font-weight:600}
+.ssub{font-size:12px;color:var(--text3);margin-top:2px;font-weight:500}
+.toggle{width:40px;height:22px;background:var(--border2);border-radius:11px;position:relative;cursor:pointer;transition:background 0.2s;border:none;flex-shrink:0}
+.toggle.on{background:var(--accent)}
+.toggle::after{content:'';position:absolute;width:16px;height:16px;background:white;border-radius:50%;top:3px;left:3px;transition:transform 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.3)}
+.toggle.on::after{transform:translateX(18px)}
+
+/* ── SPINNER ── */
+.sp{display:inline-block;width:14px;height:14px;border:2px solid rgba(0,0,0,0.2);border-top-color:#000;border-radius:50%;animation:spin 0.6s linear infinite}
+.sp-w{border-color:rgba(200,241,53,0.2);border-top-color:var(--accent)}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+hr.div{border:none;border-top:1px solid var(--border);margin:16px 0}
+
+/* ── QUICK START ── */
+.qs-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
+.qs-item:last-child{border-bottom:none}
+.qs-dot{width:24px;height:24px;min-width:24px;border-radius:50%;background:var(--border2);color:var(--text3);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;transition:all 0.3s}
+.qs-dot.done{background:var(--accent);color:#000}
+.qs-text{font-size:13.5px;font-weight:600;color:var(--text2)}
+.qs-item.done .qs-text{color:var(--text3);text-decoration:line-through}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- SIDEBAR -->
+<aside class="side">
+  <div class="side-logo">
+    <div class="logo-mark">V</div>
+    <div class="logo-text">Voklo</div>
+  </div>
+
+  <div class="nav-section-label">Main</div>
+  <button class="nav-item on" onclick="go('dashboard',this)"><span class="nav-icon">⊞</span><span class="nav-label">Dashboard</span></button>
+  <button class="nav-item" onclick="go('library',this)"><span class="nav-icon">🖼</span><span class="nav-label">Photo Library</span></button>
+  <button class="nav-item" onclick="go('schedule',this)"><span class="nav-icon">⏰</span><span class="nav-label">Scheduler</span></button>
+  <button class="nav-item" onclick="go('calendar',this)"><span class="nav-icon">📅</span><span class="nav-label">Calendar</span></button>
+
+  <div class="nav-divider"></div>
+
+  <div class="nav-section-label">AI Tools</div>
+  <button class="nav-item" onclick="go('captions',this)"><span class="nav-icon">✦</span><span class="nav-label">Caption Writer</span></button>
+  <button class="nav-item" onclick="go('reviews',this)"><span class="nav-icon">⭐</span><span class="nav-label">Review Responder</span></button>
+
+  <div class="nav-divider"></div>
+
+  <button class="nav-item" onclick="go('settings',this)"><span class="nav-icon">⚙</span><span class="nav-label">Settings</span></button>
+
+  <div class="side-bottom">
+    <div class="biz-pill">
+      <div class="biz-dot"></div>
+      <div class="biz-info">
+        <div class="biz-name" id="foot-biz">Not configured</div>
+        <div class="biz-plan">Growth Plan · Active</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="tbar-title">Dashboard</div>
+    <div id="tbar-badge"></div>
+  </div>
+
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div class="page on" id="page-dashboard">
+      <div class="stats">
+        <div class="stat"><div class="stat-val" id="d-ph">0</div><div class="stat-lbl">Photos Ready</div></div>
+        <div class="stat"><div class="stat-val" id="d-sc">0</div><div class="stat-lbl">Posts Scheduled</div></div>
+        <div class="stat"><div class="stat-val" id="d-pl">2</div><div class="stat-lbl">Platforms</div></div>
+        <div class="stat"><div class="stat-val" id="d-dy">3</div><div class="stat-lbl">Days / Week</div></div>
+      </div>
+      <div class="g2">
+        <div class="card">
+          <div class="ctitle">Get Started</div>
+          <div id="qs-list">
+            <div class="qs-item"><div class="qs-dot" id="q1">1</div><div class="qs-text">Configure your business in Settings</div></div>
+            <div class="qs-item"><div class="qs-dot" id="q2">2</div><div class="qs-text">Upload photos to your library</div></div>
+            <div class="qs-item"><div class="qs-dot" id="q3">3</div><div class="qs-text">Set your posting schedule</div></div>
+            <div class="qs-item" style="opacity:0.4"><div class="qs-dot" style="background:var(--accent-dim);color:var(--accent)">🚀</div><div class="qs-text">Voklo takes over automatically</div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="ctitle">Upcoming Posts</div>
+          <div id="d-posts"><div class="empty"><div class="ei">📅</div><div class="et">Nothing scheduled yet</div><div class="es">Head to <span class="el" onclick="navTo('schedule')">Scheduler</span> to get started</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LIBRARY -->
+    <div class="page" id="page-library">
+      <div class="card">
+        <div class="ctitle">Upload Photos</div>
+        <div class="dz" id="dz" onclick="document.getElementById('fi').click()" ondragover="event.preventDefault();this.classList.add('over')" ondragleave="this.classList.remove('over')" ondrop="drop(event)">
+          <input type="file" id="fi" accept="image/*" multiple style="display:none" onchange="addPhotos(this.files)"/>
+          <div class="dz-icon">📸</div>
+          <div class="dz-title">Drop photos here or click to browse</div>
+          <div class="dz-sub">JPG, PNG, WEBP, screenshots — upload as many as you want</div>
+        </div>
+      </div>
+      <div class="card" id="lib-card" style="display:none">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+          <div class="ctitle" style="margin-bottom:0">Your Library</div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-ghost btn-sm" onclick="unqueueAll()">Unqueue All</button>
+            <button class="btn btn-danger btn-sm" onclick="clearAll()">Clear All</button>
+          </div>
+        </div>
+        <div class="lib-row">
+          <div class="lib-stat"><div class="ld" style="background:var(--accent)"></div><span id="lr">0 ready</span></div>
+          <div class="lib-stat"><div class="ld" style="background:var(--green)"></div><span id="lq">0 scheduled</span></div>
+          <div class="lib-stat"><div class="ld" style="background:var(--border2)"></div><span id="lt">0 total</span></div>
+        </div>
+        <div class="pgrid" id="pg"></div>
+      </div>
+    </div>
+
+    <!-- SCHEDULER -->
+    <div class="page" id="page-schedule">
+      <div id="slb" style="display:none" class="live live-go"><div class="pulse"></div>Automation live — <span id="spc">0</span> posts scheduled and queued</div>
+      <div class="sched-g">
+        <div>
+          <div class="card">
+            <div class="ctitle">Posting Days</div>
+            <div class="days" id="dp">
+              <button class="day" onclick="td(this)">Su</button>
+              <button class="day on" onclick="td(this)">Mo</button>
+              <button class="day on" onclick="td(this)">Tu</button>
+              <button class="day" onclick="td(this)">We</button>
+              <button class="day on" onclick="td(this)">Th</button>
+              <button class="day" onclick="td(this)">Fr</button>
+              <button class="day" onclick="td(this)">Sa</button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="ctitle">Time & Frequency</div>
+            <div class="g2">
+              <div class="field"><label class="lbl">Post Time</label><input type="time" id="pt" value="09:00" oninput="updateSum()"/></div>
+              <div class="field"><label class="lbl">Frequency</label>
+                <select id="pf" onchange="updateSum()">
+                  <option>Once a day</option><option>Twice a day</option><option>Every other day</option><option>3× per week</option><option>Weekly</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="ctitle">Platforms</div>
+            <div class="plats">
+              <button class="plat on" onclick="tp(this)">📸 Instagram</button>
+              <button class="plat on" onclick="tp(this)">🔵 Facebook</button>
+              <button class="plat" onclick="tp(this)">🔍 Google</button>
+              <button class="plat" onclick="tp(this)">🐦 Twitter</button>
+              <button class="plat" onclick="tp(this)">💼 LinkedIn</button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="ctitle">Caption Tone</div>
+            <div class="tones" id="tr">
+              <button class="tone on" onclick="st(this,'tr')">Friendly</button>
+              <button class="tone" onclick="st(this,'tr')">Professional</button>
+              <button class="tone" onclick="st(this,'tr')">Witty</button>
+              <button class="tone" onclick="st(this,'tr')">Bold</button>
+              <button class="tone" onclick="st(this,'tr')">Casual</button>
+              <button class="tone" onclick="st(this,'tr')">Luxurious</button>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="card">
+            <div class="ctitle">Preview</div>
+            <div class="sched-preview" id="ss">Select your days above</div>
+            <div style="font-size:12.5px;color:var(--text3);line-height:1.7;font-weight:500;margin-bottom:18px">Voklo writes AI captions for each photo and queues them on your schedule automatically.</div>
+            <button class="btn btn-accent btn-full" id="gb" onclick="genSched()">⚡ Generate & Schedule</button>
+            <button class="btn btn-ghost btn-full" id="rb" style="display:none;margin-top:8px" onclick="resetSched()">Reset Schedule</button>
+          </div>
+          <div class="card" id="npcard" style="display:none">
+            <div class="ctitle" style="margin-bottom:12px">Queued Posts</div>
+            <div class="plist" id="spl"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CALENDAR -->
+    <div class="page" id="page-calendar">
+      <div class="stats">
+        <div class="stat"><div class="stat-val" id="ct">0</div><div class="stat-lbl">Scheduled</div></div>
+        <div class="stat"><div class="stat-val" id="cw">3</div><div class="stat-lbl">Days/Week</div></div>
+        <div class="stat"><div class="stat-val" id="cpl2">2</div><div class="stat-lbl">Platforms</div></div>
+        <div class="stat"><div class="stat-val" id="cr">0</div><div class="stat-lbl">Photos Left</div></div>
+      </div>
+      <div class="card">
+        <div class="cal-hdr">
+          <button class="cal-nav-btn" onclick="prevM()">← Prev</button>
+          <div class="cal-m" id="cml"></div>
+          <button class="cal-nav-btn" onclick="nextM()">Next →</button>
+        </div>
+        <div class="cgrid" id="cg"></div>
+      </div>
+      <div class="card" id="cpc" style="display:none">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+          <div class="ctitle" style="margin-bottom:0">Upcoming Posts</div>
+          <span style="background:var(--green-dim);color:var(--green);font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px" id="cpb"></span>
+        </div>
+        <div class="plist" id="cpl"></div>
+      </div>
+    </div>
+
+    <!-- CAPTION WRITER -->
+    <div class="page" id="page-captions">
+      <div class="g2">
+        <div class="card">
+          <div class="ctitle">Caption Writer</div>
+          <div class="field"><label class="lbl">What's this post about?</label><textarea rows="4" id="cc" placeholder="e.g. New summer menu — grilled salmon at $24, happy hour 4-7pm weekdays."></textarea></div>
+          <div class="field"><label class="lbl">Platform</label>
+            <select id="cpl">
+              <option>Instagram</option><option>Facebook</option><option>Google Business</option><option>Twitter / X</option><option>LinkedIn</option><option>All Platforms</option>
+            </select>
+          </div>
+          <div class="field"><label class="lbl">Tone</label>
+            <div class="tones" id="ctr">
+              <button class="tone on" onclick="st(this,'ctr')">Friendly</button>
+              <button class="tone" onclick="st(this,'ctr')">Professional</button>
+              <button class="tone" onclick="st(this,'ctr')">Witty</button>
+              <button class="tone" onclick="st(this,'ctr')">Bold</button>
+              <button class="tone" onclick="st(this,'ctr')">Casual</button>
+            </div>
+          </div>
+          <div class="btn-row" style="margin-top:4px">
+            <button class="btn btn-accent" id="capbtn" onclick="genCap()">✦ Generate Caption</button>
+            <button class="btn btn-ghost" onclick="document.getElementById('capout').style.display='none';document.getElementById('cc').value=''">Clear</button>
+          </div>
+        </div>
+        <div>
+          <div class="card" id="capout" style="display:none">
+            <div class="out-hdr">
+              <div class="ctitle" style="margin-bottom:0">Result</div>
+              <button class="copy-btn" onclick="copyEl('captxt','capcp')" id="capcp">Copy</button>
+            </div>
+            <div class="out-box" id="captxt"></div>
+          </div>
+          <div class="card" id="capempty" style="background:var(--accent-dim);border-color:var(--accent-mid)">
+            <div class="empty"><div class="ei" style="opacity:1">✦</div><div class="et" style="color:var(--accent)">AI Caption Writer</div><div class="es" style="color:var(--accent);opacity:0.6">Describe your post and get a platform-optimized caption with hashtags in seconds.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REVIEW RESPONDER -->
+    <div class="page" id="page-reviews">
+      <div class="g2">
+        <div class="card">
+          <div class="ctitle">Paste Review</div>
+          <div class="field"><label class="lbl">Customer Review</label><textarea rows="7" id="rvin" placeholder="Paste the review here...&#10;&#10;e.g. &quot;The food was cold and service was really slow. Waited 45 minutes.&quot;"></textarea></div>
+          <div class="field"><label class="lbl">Response Tone</label>
+            <div class="tones" id="rvtr">
+              <button class="tone on" onclick="st(this,'rvtr')">Professional</button>
+              <button class="tone" onclick="st(this,'rvtr')">Friendly</button>
+              <button class="tone" onclick="st(this,'rvtr')">Empathetic</button>
+              <button class="tone" onclick="st(this,'rvtr')">Bold</button>
+            </div>
+          </div>
+          <div class="btn-row" style="margin-top:4px">
+            <button class="btn btn-accent" id="rvbtn" onclick="genRv()">✍ Generate Response</button>
+            <button class="btn btn-ghost" onclick="clearRv()">Clear</button>
+          </div>
+        </div>
+        <div>
+          <div class="card" id="rvout" style="display:none">
+            <div class="out-hdr">
+              <div style="display:flex;align-items:center;gap:10px">
+                <div class="ctitle" style="margin-bottom:0">Response</div>
+                <span id="rvs"></span>
+              </div>
+              <button class="copy-btn" onclick="copyEl('rvtxt','rvcp')" id="rvcp">Copy</button>
+            </div>
+            <div class="out-box" id="rvtxt"></div>
+          </div>
+          <div class="card" id="rvempty" style="background:var(--accent-dim);border-color:var(--accent-mid)">
+            <div class="empty"><div class="ei" style="opacity:1">⭐</div><div class="et" style="color:var(--accent)">Review Responder</div><div class="es" style="color:var(--accent);opacity:0.6">Paste any Google, Yelp, or Facebook review and get a professional human-sounding response instantly.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="page" id="page-settings">
+      <div class="g2">
+        <div>
+          <div class="card">
+            <div class="ctitle">Business Profile</div>
+            <div class="field"><label class="lbl">Business Name</label><input type="text" id="sbn" placeholder="e.g. Tony's Italian Kitchen" oninput="updateFoot()"/></div>
+            <div class="field"><label class="lbl">Describe Your Business</label><textarea rows="4" id="sbd" placeholder="e.g. Family-owned Italian restaurant in downtown Boston. Known for fresh homemade pasta. Open since 1998."></textarea></div>
+            <div class="field"><label class="lbl">City / Location</label><input type="text" id="sloc" placeholder="e.g. Boston, MA"/></div>
+            <button class="btn btn-accent" onclick="saveSett()">Save Profile</button>
+          </div>
+        </div>
+        <div>
+          <div class="card">
+            <div class="ctitle">Default Tone</div>
+            <div class="tones" id="str">
+              <button class="tone on" onclick="st(this,'str')">Friendly</button>
+              <button class="tone" onclick="st(this,'str')">Professional</button>
+              <button class="tone" onclick="st(this,'str')">Witty</button>
+              <button class="tone" onclick="st(this,'str')">Bold</button>
+              <button class="tone" onclick="st(this,'str')">Casual</button>
+              <button class="tone" onclick="st(this,'str')">Luxurious</button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="ctitle">Notifications</div>
+            <div class="srow"><div><div class="slbl">Post reminders</div><div class="ssub">Notified before posts go out</div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+            <div class="srow"><div><div class="slbl">New review alerts</div><div class="ssub">Alert when a new review comes in</div></div><button class="toggle" onclick="this.classList.toggle('on')"></button></div>
+            <div class="srow"><div><div class="slbl">Weekly summary</div><div class="ssub">Email recap every Monday</div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+          </div>
+          <div class="card">
+            <div class="ctitle">Subscription</div>
+            <div style="font-size:15px;font-weight:700;margin-bottom:4px">Growth Plan — $97/month</div>
+            <div style="font-size:13px;color:var(--text3);margin-bottom:14px;font-weight:500">Trial ends in 7 days · No charge until then</div>
+            <button class="btn btn-ghost btn-sm">Manage Billing</button>
+          </div>
+          <div class="card" style="margin-top:0">
+            <div class="ctitle">Account</div>
+            <div style="font-size:13px;color:var(--text3);margin-bottom:14px;font-weight:500" id="acct-email"></div>
+            <button class="btn btn-danger btn-sm" onclick="signOut()">Sign Out</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<script>
+const PROXY='https://voklo-proxy.bobby11lachance.workers.dev';
+const MO=["January","February","March","April","May","June","July","August","September","October","November","December"];
+let photos=[],posts=[],calY=new Date().getFullYear(),calM=new Date().getMonth();
+const TODAY=new Date();
+
+// NAV
+function go(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('on'));
+  document.getElementById('page-'+id).classList.add('on');
+  btn.classList.add('on');
+  const titles={dashboard:'Dashboard',library:'Photo Library',schedule:'Scheduler',calendar:'Post Calendar',captions:'Caption Writer',reviews:'Review Responder',settings:'Settings'};
+  document.getElementById('tbar-title').textContent=titles[id]||id;
+  if(id==='calendar')renderCal();
+  if(id==='dashboard')renderDash();
+  updateCalStats();
+}
+
+function navTo(id){
+  const btn=[...document.querySelectorAll('.nav-item')].find(b=>b.getAttribute('onclick')?.includes("'"+id+"'"));
+  if(btn)go(id,btn);
+}
+
+// SETTINGS
+function updateFoot(){
+  document.getElementById('foot-biz').textContent=document.getElementById('sbn').value||'Not configured';
+  updateQS();
+  if(currentUser && document.getElementById('acct-email')) document.getElementById('acct-email').textContent = 'Signed in as ' + currentUser.email;
+}
+
+async function saveSett(){
+  updateFoot();
+  const e=event.target;e.innerHTML='<span class="sp sp-w"></span> Saving...';
+  await saveUserData();
+  e.textContent='✓ Saved';e.style.background='var(--green)';e.style.color='#fff';
+  setTimeout(()=>{e.textContent='Save Profile';e.style.background='';e.style.color='';},1500);
+}
+
+function st(btn,rid){document.querySelectorAll('#'+rid+' .tone').forEach(b=>b.classList.remove('on'));btn.classList.add('on')}
+
+function updateQS(){
+  const set=(id,done)=>{
+    const el=document.getElementById(id);if(!el)return;
+    el.classList.toggle('done',done);
+    el.textContent=done?'✓':el.id.replace('q','');
+    el.closest?.('.qs-item')?.classList.toggle('done',done);
+  };
+  set('q1',document.getElementById('sbn').value.trim().length>0);
+  set('q2',photos.length>0);
+  set('q3',posts.length>0);
+}
+
+// PHOTOS
+function addPhotos(files){
+  Array.from(files).forEach(f=>photos.push({id:Math.random().toString(36).slice(2),url:URL.createObjectURL(f),used:false}));
+  renderLib();renderDash();updateQS();
+}
+
+function drop(e){e.preventDefault();document.getElementById('dz').classList.remove('over');addPhotos(e.dataTransfer.files)}
+
+function renderLib(){
+  const av=photos.filter(p=>!p.used).length,us=photos.filter(p=>p.used).length;
+  document.getElementById('lr').textContent=av+' ready';
+  document.getElementById('lq').textContent=us+' scheduled';
+  document.getElementById('lt').textContent=photos.length+' total';
+  document.getElementById('lib-card').style.display=photos.length?'block':'none';
+  document.getElementById('pg').innerHTML=photos.map(p=>`
+    <div class="pitem ${p.used?'queued':''}">
+      <img src="${p.url}" alt=""/>
+      ${p.used?'<div class="pstatus ps-s">Scheduled</div>':'<div class="pstatus ps-r">Ready</div>'}
+      ${!p.used?`<button class="prem" onclick="remPhoto('${p.id}')">✕</button>`:''}
+    </div>`).join('');
+}
+
+function remPhoto(id){photos=photos.filter(p=>p.id!==id);renderLib();renderDash()}
+function unqueueAll(){photos=photos.map(p=>({...p,used:false}));renderLib()}
+function clearAll(){
+  photos=[];posts=[];renderLib();renderDash();
+  document.getElementById('slb').style.display='none';
+  document.getElementById('npcard').style.display='none';
+  document.getElementById('rb').style.display='none';
+}
+
+// SCHEDULE
+function td(btn){btn.classList.toggle('on');updateSum();renderDash()}
+function tp(btn){btn.classList.toggle('on');renderDash()}
+function getDays(){return[...document.querySelectorAll('#dp .day.on')].map(b=>b.textContent.trim())}
+function getPlats(){return[...document.querySelectorAll('.plat.on')].map(b=>b.textContent.trim())}
+function getTone(){return document.querySelector('#tr .tone.on')?.textContent||'Friendly'}
+
+function updateSum(){
+  const days=getDays(),time=document.getElementById('pt')?.value||'09:00',freq=document.getElementById('pf')?.value||'Once a day';
+  const [h]=time.split(':'),hr=parseInt(h),ampm=hr>=12?'PM':'AM',h12=hr%12||12,min=time.split(':')[1];
+  const dm={Su:'Sun',Mo:'Mon',Tu:'Tue',We:'Wed',Th:'Thu',Fr:'Fri',Sa:'Sat'};
+  document.getElementById('ss').textContent=days.length
+    ?`Posts go out every ${days.map(d=>dm[d]||d).join(', ')} at ${h12}:${min} ${ampm} — ${freq.toLowerCase()}.`
+    :'⚠ Select at least one posting day.';
+  renderDash();
+}
+
+async function genSched(){
+  const av=photos.filter(p=>!p.used),days=getDays();
+  if(!av.length){alert('Upload photos to your library first!');return}
+  if(!days.length){alert('Select at least one posting day.');return}
+  const btn=document.getElementById('gb');btn.disabled=true;btn.innerHTML='<span class="sp"></span> Generating...';
+  const dm={Su:0,Mo:1,Tu:2,We:3,Th:4,Fr:5,Sa:6},idxs=days.map(d=>dm[d]);
+  const dates=[],cur=new Date();
+  while(dates.length<Math.min(av.length,10)){if(idxs.includes(cur.getDay()))dates.push(new Date(cur));cur.setDate(cur.getDate()+1)}
+  const ts=av.slice(0,dates.length),biz=document.getElementById('sbn')?.value||'a local business',desc=document.getElementById('sbd')?.value||'',tone=getTone(),plats=getPlats().join(', ');
+  const np=[];
+  for(let i=0;i<ts.length;i++){
+    try{
+      const res=await fetch(PROXY,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:500,messages:[{role:'user',content:`Write a social media caption for ${biz}${desc?'. '+desc:''}. Tone: ${tone}. Platforms: ${plats}. Strong hook. 1-2 emojis. 5 hashtags. Return ONLY the caption.`}]})});
+      const d=await res.json();
+      np.push({id:Math.random().toString(36).slice(2),imgUrl:ts[i].url,imgId:ts[i].id,caption:d.content?.[0]?.text||'Caption generated.',date:dates[i],platforms:plats});
+    }catch(e){np.push({id:Math.random().toString(36).slice(2),imgUrl:ts[i].url,imgId:ts[i].id,caption:'Caption coming soon...',date:dates[i],platforms:plats})}
+  }
+  photos=photos.map(p=>ts.find(u=>u.id===p.id)?{...p,used:true}:p);
+  posts=[...posts,...np];
+  renderLib();renderSchedPosts();
+  document.getElementById('slb').style.display='flex';
+  document.getElementById('spc').textContent=posts.length;
+  document.getElementById('npcard').style.display='block';
+  document.getElementById('rb').style.display='flex';
+  renderDash();updateQS();
+  btn.disabled=false;btn.innerHTML='⚡ Generate & Schedule';
+}
+
+function resetSched(){
+  posts=[];photos=photos.map(p=>({...p,used:false}));
+  renderLib();renderDash();
+  document.getElementById('slb').style.display='none';
+  document.getElementById('npcard').style.display='none';
+  document.getElementById('rb').style.display='none';
+  document.getElementById('spl').innerHTML='';
+}
+
+function renderSchedPosts(){
+  const time=document.getElementById('pt')?.value||'09:00';
+  document.getElementById('spl').innerHTML=posts.slice(0,5).map(p=>`
+    <div class="pitem2">
+      <img src="${p.imgUrl}" class="pthumb" alt=""/>
+      <div style="flex:1;min-width:0"><div class="pmeta">${p.date.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})} · ${time}</div><div class="pcap">${p.caption}</div></div>
+      <span class="pbadge pb-g">✓ Ready</span>
+    </div>`).join('');
+}
+
+// CALENDAR
+function renderCal(){
+  document.getElementById('cml').textContent=`${MO[calM]} ${calY}`;
+  const first=new Date(calY,calM,1),last=new Date(calY,calM+1,0),cells=[];
+  for(let i=0;i<first.getDay();i++)cells.push({date:new Date(calY,calM,i-first.getDay()+1),curr:false});
+  for(let d=1;d<=last.getDate();d++)cells.push({date:new Date(calY,calM,d),curr:true});
+  while(cells.length%7){const p=cells[cells.length-1].date,n=new Date(p);n.setDate(p.getDate()+1);cells.push({date:n,curr:false})}
+  const pd={};posts.forEach(p=>{const k=p.date.toDateString();pd[k]=(pd[k]||0)+1});
+  document.getElementById('cg').innerHTML=
+    ['Su','Mo','Tu','We','Th','Fr','Sa'].map(d=>`<div class="cdname">${d}</div>`).join('')+
+    cells.map(({date,curr})=>{
+      const k=date.toDateString(),it=k===TODAY.toDateString(),cnt=pd[k]||0;
+      return`<div class="ccell ${curr?'':'other'} ${it?'today':''} ${cnt?'haspost':''}"><span>${date.getDate()}</span>${cnt?'<div class="cdot"></div>':''}</div>`;
+    }).join('');
+  const cpc=document.getElementById('cpc');
+  if(posts.length){
+    cpc.style.display='block';
+    document.getElementById('cpb').textContent=`✓ ${posts.length} scheduled`;
+    const time=document.getElementById('pt')?.value||'09:00';
+    document.getElementById('cpl').innerHTML=posts.slice(0,6).map(p=>`
+      <div class="pitem2">
+        <img src="${p.imgUrl}" class="pthumb" alt=""/>
+        <div style="flex:1;min-width:0"><div class="pmeta">${p.date.toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'})} · ${time}</div><div class="pcap">${p.caption}</div></div>
+        <span class="pbadge pb-g">✓ Ready</span>
+      </div>`).join('');
+  }else cpc.style.display='none';
+}
+
+function prevM(){if(calM===0){calM=11;calY--}else calM--;renderCal()}
+function nextM(){if(calM===11){calM=0;calY++}else calM++;renderCal()}
+
+function updateCalStats(){
+  const av=photos.filter(p=>!p.used).length;
+  document.getElementById('ct').textContent=posts.length;
+  document.getElementById('cw').textContent=getDays().length;
+  document.getElementById('cpl2').textContent=getPlats().length;
+  document.getElementById('cr').textContent=av;
+}
+
+// DASHBOARD
+function renderDash(){
+  const av=photos.filter(p=>!p.used).length;
+  document.getElementById('d-ph').textContent=av;
+  document.getElementById('d-sc').textContent=posts.length;
+  document.getElementById('d-pl').textContent=getPlats().length;
+  document.getElementById('d-dy').textContent=getDays().length;
+  const time=document.getElementById('pt')?.value||'09:00';
+  document.getElementById('d-posts').innerHTML=posts.length
+    ?posts.slice(0,3).map(p=>`<div class="pitem2"><img src="${p.imgUrl}" class="pthumb" alt=""/><div style="flex:1;min-width:0"><div class="pmeta">${p.date.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})} · ${time}</div><div class="pcap">${p.caption}</div></div></div>`).join('')
+    :`<div class="empty"><div class="ei">📅</div><div class="et">Nothing scheduled yet</div><div class="es">Head to <span class="el" onclick="navTo('schedule')">Scheduler</span> to get started</div></div>`;
+}
+
+// CAPTION WRITER
+async function genCap(){
+  const ctx=document.getElementById('cc').value.trim();if(!ctx)return;
+  const btn=document.getElementById('capbtn');btn.disabled=true;btn.innerHTML='<span class="sp"></span>';
+  const biz=document.getElementById('sbn')?.value||'a local business',desc=document.getElementById('sbd')?.value||'',tone=document.querySelector('#ctr .tone.on')?.textContent||'Friendly',plat=document.getElementById('cpl').value;
+  try{
+    const res=await fetch(PROXY,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,messages:[{role:'user',content:`Write a ${plat} caption for ${biz}${desc?'. '+desc:''}. Post: ${ctx}. Tone: ${tone}. Strong hook. 1-2 emojis. 5-7 hashtags. Return ONLY the caption.`}]})});
+    const d=await res.json();
+    document.getElementById('captxt').textContent=d.content?.[0]?.text||'';
+    document.getElementById('capout').style.display='block';
+    document.getElementById('capempty').style.display='none';
+  }catch(e){}
+  btn.disabled=false;btn.innerHTML='✦ Generate Caption';
+}
+
+// REVIEWS
+function detectSent(text){
+  const l=text.toLowerCase(),neg=['terrible','awful','worst','horrible','rude','bad','slow','cold','dirty','disappointed','never again'],pos=['great','amazing','excellent','love','best','wonderful','fantastic','perfect','friendly','delicious','outstanding'];
+  const n=neg.filter(w=>l.includes(w)).length,p=pos.filter(w=>l.includes(w)).length;
+  return n>p?'negative':p>n?'positive':'neutral';
+}
+
+async function genRv(){
+  const rv=document.getElementById('rvin').value.trim();if(!rv)return;
+  const btn=document.getElementById('rvbtn');btn.disabled=true;btn.innerHTML='<span class="sp"></span> Writing...';
+  const biz=document.getElementById('sbn')?.value||'a local business',tone=document.querySelector('#rvtr .tone.on')?.textContent||'Professional',sent=detectSent(rv);
+  try{
+    const res=await fetch(PROXY,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:300,messages:[{role:'user',content:`Write a review response for ${biz}. Review: "${rv}". Tone: ${tone}. ${sent==='negative'?'Apologize sincerely, take ownership, offer to make it right.':'Express genuine gratitude and invite them back.'} Sound fully human. 3-5 sentences. End with "The Team". Return ONLY the response.`}]})});
+    const d=await res.json();
+    document.getElementById('rvtxt').textContent=d.content?.[0]?.text||'';
+    const se=document.getElementById('rvs');
+    se.textContent=sent==='positive'?'😊 Positive':sent==='negative'?'😟 Negative':'😐 Neutral';
+    se.className=`sent ${sent==='positive'?'s-pos':sent==='negative'?'s-neg':'s-neu'}`;
+    document.getElementById('rvout').style.display='block';
+    document.getElementById('rvempty').style.display='none';
+  }catch(e){}
+  btn.disabled=false;btn.innerHTML='✍ Generate Response';
+}
+
+function clearRv(){document.getElementById('rvin').value='';document.getElementById('rvout').style.display='none';document.getElementById('rvempty').style.display='block'}
+
+// UTILS
+function copyEl(id,btnId){
+  navigator.clipboard.writeText(document.getElementById(id).textContent);
+  const btn=document.getElementById(btnId);btn.textContent='✓ Copied!';
+  setTimeout(()=>btn.textContent='Copy',1500);
+}
+
+// SUPABASE
+const SUPA_URL = 'https://tptfzzamwthbcnzfmusj.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRwdGZ6emFtd3RoYmNuemZtdXNqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4ODYxNzMsImV4cCI6MjA5MjQ2MjE3M30.9QCuNGKM8DOta3CWVs2QFpb_nR8mqZCEyQ87vmYiqTo';
+const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
+let currentUser = null;
+
+async function initAuth() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) {
+    window.location.href = '/login.html';
+    return;
+  }
+  currentUser = session.user;
+  loadUserData();
+}
+
+async function loadUserData() {
+  const { data } = await sb.from('users').select('*').eq('id', currentUser.id).single();
+  if (data) {
+    if (data.biz_name) { document.getElementById('sbn').value = data.biz_name; updateFoot(); }
+    if (data.biz_desc) document.getElementById('sbd').value = data.biz_desc;
+    if (data.location) document.getElementById('sloc').value = data.location;
+    if (data.tone) {
+      document.querySelectorAll('#str .tone').forEach(b => b.classList.remove('on'));
+      const tb = [...document.querySelectorAll('#str .tone')].find(b => b.textContent === data.tone);
+      if (tb) tb.classList.add('on');
+    }
+  }
+  updateQS();
+}
+
+async function saveUserData() {
+  if (!currentUser) return;
+  const tone = document.querySelector('#str .tone.on')?.textContent || 'Friendly';
+  await sb.from('users').upsert({
+    id: currentUser.id,
+    email: currentUser.email,
+    biz_name: document.getElementById('sbn').value,
+    biz_desc: document.getElementById('sbd').value,
+    location: document.getElementById('sloc').value,
+    tone,
+  });
+}
+
+async function signOut() {
+  await sb.auth.signOut();
+  window.location.href = '/login.html';
+}
+
+// INIT
+initAuth();
+updateSum();renderCal();renderDash();
+</script>
+</body>
+</html>
