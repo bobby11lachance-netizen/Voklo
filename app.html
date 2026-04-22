@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Voklo — Social Media on Autopilot</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #F7F6F3;
+    --white: #FFFFFF;
+    --card: #FFFFFF;
+    --border: #E8E5DF;
+    --border-dark: #D4D0C8;
+    --accent: #2563EB;
+    --accent-light: #EFF6FF;
+    --accent-mid: #BFDBFE;
+    --green: #16A34A;
+    --green-light: #F0FDF4;
+    --green-mid: #BBF7D0;
+    --red: #DC2626;
+    --red-light: #FEF2F2;
+    --orange: #EA580C;
+    --orange-light: #FFF7ED;
+    --text: #1A1A1A;
+    --mid: #4B5563;
+    --muted: #9CA3AF;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .layout { display: flex; height: 100vh; overflow: hidden; }
+
+  /* Sidebar */
+  .sidebar {
+    width: 230px; min-width: 230px;
+    background: var(--white);
+    border-right: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    overflow-y: auto;
+  }
+
+  .sidebar-top {
+    padding: 24px 20px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo { font-size: 22px; font-weight: 800; color: var(--accent); letter-spacing: -0.5px; }
+  .logo span { color: var(--text); }
+  .logo-tagline { font-size: 11.5px; color: var(--muted); margin-top: 2px; font-weight: 500; }
+
+  .nav { padding: 12px 10px; flex: 1; }
+  .nav-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); padding: 10px 10px 6px; }
+
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 12px; border-radius: 10px;
+    font-size: 13.5px; font-weight: 600;
+    color: var(--mid); cursor: pointer;
+    transition: all 0.12s; margin-bottom: 2px;
+    border: none; background: none; width: 100%; text-align: left;
+  }
+  .nav-item:hover { background: var(--bg); color: var(--text); }
+  .nav-item.active { background: var(--accent-light); color: var(--accent); }
+
+  .nav-icon {
+    width: 32px; height: 32px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; background: var(--bg); flex-shrink: 0;
+  }
+  .nav-item.active .nav-icon { background: var(--accent-mid); }
+
+  .nav-step {
+    width: 20px; height: 20px; border-radius: 50%;
+    background: var(--border); color: var(--muted);
+    font-size: 10px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-left: auto;
+  }
+  .nav-item.active .nav-step { background: var(--accent-mid); color: var(--accent); }
+  .nav-item.done .nav-step { background: var(--green-mid); color: var(--green); }
+
+  .sidebar-bottom {
+    padding: 14px 16px; border-top: 1px solid var(--border);
+    margin: 0 10px 10px; background: var(--bg); border-radius: 12px;
+  }
+  .biz-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); }
+  .biz-name { font-size: 13px; font-weight: 700; color: var(--text); margin-top: 2px; }
+
+  /* Main */
+  .main { flex: 1; overflow-y: auto; }
+  .main-inner { padding: 36px 44px; max-width: 820px; }
+
+  /* Page Header */
+  .step-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--accent-light); color: var(--accent);
+    font-size: 11px; font-weight: 700;
+    padding: 4px 10px; border-radius: 20px; margin-bottom: 10px;
+    letter-spacing: 0.04em; text-transform: uppercase;
+  }
+  .page-title { font-size: 24px; font-weight: 800; letter-spacing: -0.3px; margin-bottom: 6px; }
+  .page-sub { color: var(--mid); font-size: 14px; line-height: 1.6; font-weight: 500; margin-bottom: 28px; }
+
+  /* Cards */
+  .card {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: 16px; padding: 24px; margin-bottom: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+  .card-title { font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+  .card-icon { width: 34px; height: 34px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 16px; background: var(--bg); }
+
+  /* Badges */
+  .badge { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 20px; display: inline-flex; align-items: center; gap: 4px; }
+  .badge-blue { background: var(--accent-light); color: var(--accent); }
+  .badge-green { background: var(--green-light); color: var(--green); }
+
+  /* Drop Zone */
+  .drop-zone {
+    border: 2px dashed var(--border-dark); border-radius: 14px;
+    padding: 40px 24px; text-align: center; cursor: pointer;
+    transition: all 0.15s; background: var(--bg); margin-bottom: 18px;
+  }
+  .drop-zone:hover, .drop-zone.dragging { border-color: var(--accent); background: var(--accent-light); }
+  .drop-icon-wrap {
+    width: 56px; height: 56px; border-radius: 14px;
+    background: var(--white); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; margin: 0 auto 14px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  .drop-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+  .drop-sub { font-size: 13px; color: var(--muted); font-weight: 500; }
+
+  /* Image Grid */
+  .image-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); gap: 10px; margin-bottom: 16px; }
+  .img-item { position: relative; border-radius: 10px; overflow: hidden; aspect-ratio: 1; border: 2px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+  .img-item.used { opacity: 0.45; }
+  .img-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .img-queued-label { position: absolute; bottom: 0; left: 0; right: 0; background: var(--green); color: white; font-size: 9px; font-weight: 700; text-align: center; padding: 3px; text-transform: uppercase; }
+
+  /* Queue stats */
+  .queue-summary { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+  .q-stat { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 10px 16px; flex: 1; min-width: 100px; text-align: center; }
+  .q-stat-val { font-size: 22px; font-weight: 800; line-height: 1; }
+  .q-stat-lbl { font-size: 11px; font-weight: 600; color: var(--muted); margin-top: 3px; text-transform: uppercase; letter-spacing: 0.05em; }
+
+  /* Schedule */
+  .schedule-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 22px; }
+  .s-label { font-size: 12px; font-weight: 700; color: var(--mid); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.06em; display: block; }
+  .day-row { display: flex; gap: 7px; flex-wrap: wrap; }
+  .day-btn {
+    width: 44px; height: 44px; border-radius: 11px;
+    border: 1.5px solid var(--border); background: var(--bg);
+    color: var(--mid); font-size: 12px; font-weight: 700;
+    cursor: pointer; transition: all 0.12s;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+  .day-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .day-btn.on { border-color: var(--accent); background: var(--accent); color: white; }
+
+  .s-input {
+    background: var(--bg); border: 1.5px solid var(--border);
+    border-radius: 10px; color: var(--text);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 14px; font-weight: 600;
+    padding: 10px 14px; outline: none; width: 100%;
+    transition: border-color 0.12s;
+  }
+  .s-input:focus { border-color: var(--accent); background: var(--white); }
+  select.s-input { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%239CA3AF' d='M6 8L0 0h12z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; }
+
+  /* Platforms */
+  .platform-grid { display: flex; gap: 8px; flex-wrap: wrap; }
+  .platform-btn {
+    display: flex; align-items: center; gap: 7px;
+    padding: 8px 14px; border-radius: 10px;
+    border: 1.5px solid var(--border); background: var(--bg);
+    color: var(--mid); font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: all 0.12s;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+  .platform-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+  .platform-btn.on { border-color: var(--accent); background: var(--accent-light); color: var(--accent); }
+
+  /* Tone */
+  .tone-grid { display: flex; gap: 7px; flex-wrap: wrap; }
+  .tone-btn {
+    padding: 7px 15px; border-radius: 20px;
+    border: 1.5px solid var(--border); background: var(--bg);
+    color: var(--mid); font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: all 0.12s;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+  .tone-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .tone-btn.on { border-color: var(--accent); background: var(--accent); color: white; }
+
+  /* Preview Box */
+  .preview-box {
+    background: var(--accent-light); border: 1px solid var(--accent-mid);
+    border-radius: 12px; padding: 14px 18px;
+    font-size: 13.5px; font-weight: 600; color: var(--accent); line-height: 1.6;
+  }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 11px 22px; border-radius: 11px;
+    font-size: 14px; font-weight: 700;
+    cursor: pointer; transition: all 0.12s;
+    border: none; font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+  .btn-blue { background: var(--accent); color: white; box-shadow: 0 2px 8px rgba(37,99,235,0.3); }
+  .btn-blue:hover { background: #1D4ED8; transform: translateY(-1px); }
+  .btn-blue:disabled { background: var(--accent-mid); color: var(--accent); cursor: not-allowed; transform: none; box-shadow: none; }
+  .btn-outline { background: white; color: var(--mid); border: 1.5px solid var(--border); }
+  .btn-outline:hover { border-color: var(--border-dark); color: var(--text); }
+  .btn-row { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; align-items: center; }
+
+  /* Status */
+  .status-banner { display: flex; align-items: center; gap: 12px; padding: 14px 18px; border-radius: 13px; font-size: 14px; font-weight: 600; margin-bottom: 18px; }
+  .status-live { background: var(--green-light); color: var(--green); border: 1px solid var(--green-mid); }
+  .status-warn { background: var(--orange-light); color: var(--orange); border: 1px solid #FED7AA; }
+  .pulse { width: 10px; height: 10px; border-radius: 50%; background: currentColor; animation: pulse 1.5s ease infinite; flex-shrink: 0; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.7)} }
+
+  /* Stats */
+  .stats-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 18px; }
+  .stat-card { background: var(--white); border: 1px solid var(--border); border-radius: 14px; padding: 18px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+  .stat-val { font-size: 28px; font-weight: 800; color: var(--accent); line-height: 1; margin-bottom: 4px; }
+  .stat-lbl { font-size: 11.5px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+
+  /* Calendar */
+  .cal-nav-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .cal-month-label { font-size: 17px; font-weight: 800; }
+  .cal-btn { background: var(--bg); border: 1.5px solid var(--border); color: var(--mid); border-radius: 9px; padding: 7px 14px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; }
+  .cal-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .cal-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 4px; }
+  .cal-day-name { text-align: center; font-size: 11px; font-weight: 700; color: var(--muted); padding: 4px 0 10px; text-transform: uppercase; letter-spacing: 0.06em; }
+  .cal-cell { aspect-ratio: 1; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; border: 1.5px solid transparent; min-height: 48px; }
+  .cal-cell.other { color: var(--muted); opacity: 0.4; }
+  .cal-cell.today { border-color: var(--accent); background: var(--accent-light); color: var(--accent); }
+  .cal-cell.has-post { background: var(--green-light); border-color: var(--green-mid); }
+  .cal-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); margin-top: 3px; }
+
+  /* Post list */
+  .post-item { display: flex; gap: 14px; align-items: flex-start; padding: 14px 0; border-bottom: 1px solid var(--border); }
+  .post-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .post-thumb { width: 60px; height: 60px; border-radius: 10px; object-fit: cover; border: 1px solid var(--border); flex-shrink: 0; }
+  .post-date { font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .post-caption { font-size: 13px; color: var(--mid); line-height: 1.55; font-weight: 500; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+
+  /* Textarea */
+  textarea {
+    width: 100%; background: var(--bg); border: 1.5px solid var(--border);
+    border-radius: 12px; color: var(--text);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 14px; font-weight: 500;
+    padding: 14px; resize: vertical; outline: none;
+    transition: all 0.12s; line-height: 1.6;
+  }
+  textarea:focus { border-color: var(--accent); background: var(--white); box-shadow: 0 0 0 3px var(--accent-light); }
+
+  .text-input {
+    width: 100%; background: var(--bg); border: 1.5px solid var(--border);
+    border-radius: 12px; color: var(--text);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 14px; font-weight: 500;
+    padding: 12px 14px; outline: none; transition: all 0.12s; margin-bottom: 12px;
+  }
+  .text-input:focus { border-color: var(--accent); background: var(--white); box-shadow: 0 0 0 3px var(--accent-light); }
+
+  /* Output */
+  .output-card { background: var(--green-light); border: 1.5px solid var(--green-mid); border-radius: 14px; overflow: hidden; margin-top: 16px; }
+  .output-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--green-mid); font-size: 11px; font-weight: 700; color: var(--green); text-transform: uppercase; letter-spacing: 0.07em; }
+  .copy-btn { background: var(--green); color: white; border: none; border-radius: 7px; padding: 4px 12px; font-size: 11px; font-weight: 700; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; }
+  .output-body { padding: 16px; font-size: 14px; line-height: 1.75; color: var(--text); white-space: pre-wrap; font-weight: 500; }
+
+  /* Sentiment */
+  .sentiment { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+  .s-pos { background: var(--green-light); color: var(--green); border: 1px solid var(--green-mid); }
+  .s-neg { background: var(--red-light); color: var(--red); border: 1px solid #FECACA; }
+  .s-neu { background: var(--orange-light); color: var(--orange); border: 1px solid #FED7AA; }
+
+  /* Spinner */
+  .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.6s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+  .help-text { font-size: 12.5px; color: var(--muted); font-weight: 500; margin-top: 8px; line-height: 1.5; }
+
+  /* Page sections */
+  .page { display: none; }
+  .page.active { display: block; }
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-top">
+      <div class="logo">Vok<span>lo</span></div>
+      <div class="logo-tagline">Social Media on Autopilot</div>
+    </div>
+    <nav class="nav">
+      <div class="nav-label">Get Started</div>
+      <button class="nav-item active" onclick="showTab('settings', this)" id="nav-settings">
+        <div class="nav-icon">⚙️</div> Business Setup
+        <div class="nav-step" id="step-settings">1</div>
+      </button>
+      <button class="nav-item" onclick="showTab('queue', this)" id="nav-queue">
+        <div class="nav-icon">🖼️</div> Upload Photos
+        <div class="nav-step" id="step-queue">2</div>
+      </button>
+      <button class="nav-item" onclick="showTab('schedule', this)" id="nav-schedule">
+        <div class="nav-icon">⏰</div> Set Schedule
+        <div class="nav-step" id="step-schedule">3</div>
+      </button>
+      <button class="nav-item" onclick="showTab('calendar', this)" id="nav-calendar">
+        <div class="nav-icon">📅</div> Post Calendar
+        <div class="nav-step" id="step-calendar">4</div>
+      </button>
+      <div class="nav-label" style="margin-top:8px">Tools</div>
+      <button class="nav-item" onclick="showTab('reviews', this)" id="nav-reviews">
+        <div class="nav-icon">⭐</div> Review Responder
+      </button>
+    </nav>
+    <div style="padding:0 10px 12px">
+      <div class="sidebar-bottom">
+        <div class="biz-label">Business</div>
+        <div class="biz-name" id="biz-display">Not set up yet</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <div class="main-inner">
+
+      <!-- SETTINGS -->
+      <div class="page active" id="page-settings">
+        <div class="step-pill">⚙ Step 1</div>
+        <div class="page-title">Set Up Your Business</div>
+        <div class="page-sub">Tell Voklo about your business once. It uses this to write captions and responses that actually sound like you.</div>
+
+        <div class="card">
+          <div class="card-header"><div class="card-title"><div class="card-icon">🏢</div> Business Info</div></div>
+          <div class="s-label">Business Name</div>
+          <input class="text-input" type="text" id="biz-name" placeholder="e.g. Tony's Italian Kitchen" oninput="updateBizDisplay()" />
+          <div class="s-label">Describe Your Business</div>
+          <textarea rows="3" id="biz-desc" placeholder="e.g. Family-owned Italian restaurant in downtown Boston. Known for fresh handmade pasta. Open since 1998."></textarea>
+          <div class="help-text">The more detail you give, the better your captions and review responses will sound.</div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><div class="card-title"><div class="card-icon">🎙️</div> Brand Voice</div></div>
+          <div class="s-label">How should your posts sound?</div>
+          <div class="tone-grid" id="tone-btns">
+            <button class="tone-btn on" onclick="selectTone(this)">Friendly</button>
+            <button class="tone-btn" onclick="selectTone(this)">Professional</button>
+            <button class="tone-btn" onclick="selectTone(this)">Witty</button>
+            <button class="tone-btn" onclick="selectTone(this)">Bold</button>
+            <button class="tone-btn" onclick="selectTone(this)">Casual</button>
+            <button class="tone-btn" onclick="selectTone(this)">Luxurious</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><div class="card-title"><div class="card-icon">📡</div> Your Platforms</div></div>
+          <div class="s-label">Which platforms do you post on?</div>
+          <div class="platform-grid">
+            <button class="platform-btn on" onclick="togglePlatform(this)">📸 Instagram</button>
+            <button class="platform-btn on" onclick="togglePlatform(this)">🔵 Facebook</button>
+            <button class="platform-btn" onclick="togglePlatform(this)">🔍 Google Business</button>
+            <button class="platform-btn" onclick="togglePlatform(this)">🐦 Twitter / X</button>
+            <button class="platform-btn" onclick="togglePlatform(this)">💼 LinkedIn</button>
+          </div>
+        </div>
+
+        <button class="btn btn-blue" onclick="showTab('queue', document.getElementById('nav-queue'))">Next: Upload Photos →</button>
+      </div>
+
+      <!-- QUEUE -->
+      <div class="page" id="page-queue">
+        <div class="step-pill">🖼 Step 2</div>
+        <div class="page-title">Upload Your Photos</div>
+        <div class="page-sub">Add a batch of photos. Voklo pulls from this queue automatically — you never have to manually pick which photo to post.</div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><div class="card-icon">📁</div> Photo Library</div>
+            <span class="badge badge-blue" id="queue-badge" style="display:none"></span>
+          </div>
+          <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()" ondragover="event.preventDefault();this.classList.add('dragging')" ondragleave="this.classList.remove('dragging')" ondrop="handleDrop(event)">
+            <input type="file" id="file-input" accept="image/*" multiple style="display:none" onchange="handleFiles(this.files)" />
+            <div class="drop-icon-wrap">📸</div>
+            <div class="drop-title">Drop photos here or click to browse</div>
+            <div class="drop-sub">JPG, PNG, WEBP, screenshots — add as many as you want</div>
+          </div>
+          <div id="queue-summary" style="display:none">
+            <div class="queue-summary">
+              <div class="q-stat"><div class="q-stat-val" id="q-total">0</div><div class="q-stat-lbl">Uploaded</div></div>
+              <div class="q-stat"><div class="q-stat-val" id="q-ready" style="color:var(--green)">0</div><div class="q-stat-lbl">Ready</div></div>
+              <div class="q-stat"><div class="q-stat-val" id="q-used" style="color:var(--muted)">0</div><div class="q-stat-lbl">Scheduled</div></div>
+            </div>
+          </div>
+          <div class="image-grid" id="image-grid"></div>
+        </div>
+        <button class="btn btn-blue" id="next-to-schedule" style="display:none" onclick="showTab('schedule', document.getElementById('nav-schedule'))">Next: Set Your Schedule →</button>
+      </div>
+
+      <!-- SCHEDULE -->
+      <div class="page" id="page-schedule">
+        <div class="step-pill">⏰ Step 3</div>
+        <div class="page-title">Set Your Posting Schedule</div>
+        <div class="page-sub">Pick your days and time once. Voklo handles everything — writing captions, queuing photos, and posting on schedule.</div>
+
+        <div id="live-banner" style="display:none" class="status-banner status-live"><div class="pulse"></div> Automation is live — <span id="live-count">0</span> posts scheduled and ready</div>
+        <div id="warn-banner" style="display:none" class="status-banner status-warn">⚠️ Upload photos first before setting your schedule</div>
+
+        <div class="card">
+          <div class="card-header"><div class="card-title"><div class="card-icon">📅</div> Which days?</div></div>
+          <div class="day-row" id="day-btns">
+            <button class="day-btn" onclick="toggleDay(this)">Su</button>
+            <button class="day-btn on" onclick="toggleDay(this)">Mo</button>
+            <button class="day-btn on" onclick="toggleDay(this)">Tu</button>
+            <button class="day-btn" onclick="toggleDay(this)">We</button>
+            <button class="day-btn on" onclick="toggleDay(this)">Th</button>
+            <button class="day-btn" onclick="toggleDay(this)">Fr</button>
+            <button class="day-btn" onclick="toggleDay(this)">Sa</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><div class="card-title"><div class="card-icon">🕐</div> What time?</div></div>
+          <div style="display:flex;gap:12px">
+            <input type="time" class="s-input" id="post-time" value="09:00" />
+            <select class="s-input" id="post-freq">
+              <option>Once a day</option>
+              <option>Twice a day</option>
+              <option>Every other day</option>
+              <option>3× per week</option>
+              <option>Weekly</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><div class="card-title"><div class="card-icon">👁️</div> Schedule Preview</div></div>
+          <div class="preview-box" id="schedule-preview">📅 Posts will go out every Mon, Tue, Thu at 9:00 AM — once a day.</div>
+          <div class="help-text" style="margin-top:12px">Voklo will generate AI captions for each photo and queue posts automatically.</div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-blue" id="generate-btn" onclick="generateSchedule()">⚡ Generate & Schedule Posts</button>
+          <button class="btn btn-outline" id="reset-btn" style="display:none" onclick="resetSchedule()">Reset</button>
+        </div>
+      </div>
+
+      <!-- CALENDAR -->
+      <div class="page" id="page-calendar">
+        <div class="page-title">📅 Post Calendar</div>
+        <div class="page-sub">See every post that's scheduled and going out automatically.</div>
+
+        <div class="stats-row">
+          <div class="stat-card"><div class="stat-val" id="cal-scheduled">0</div><div class="stat-lbl">Scheduled</div></div>
+          <div class="stat-card"><div class="stat-val" id="cal-days">3</div><div class="stat-lbl">Days / Week</div></div>
+          <div class="stat-card"><div class="stat-val" id="cal-platforms">2</div><div class="stat-lbl">Platforms</div></div>
+          <div class="stat-card"><div class="stat-val" id="cal-remaining">0</div><div class="stat-lbl">Photos Left</div></div>
+        </div>
+
+        <div class="card">
+          <div class="cal-nav-row">
+            <button class="cal-btn" onclick="prevMonth()">← Prev</button>
+            <div class="cal-month-label" id="cal-month-label"></div>
+            <button class="cal-btn" onclick="nextMonth()">Next →</button>
+          </div>
+          <div class="cal-grid" id="cal-grid"></div>
+        </div>
+
+        <div class="card" id="posts-list-card" style="display:none">
+          <div class="card-header">
+            <div class="card-title"><div class="card-icon">📋</div> Upcoming Posts</div>
+            <span class="badge badge-green" id="posts-badge"></span>
+          </div>
+          <div id="posts-list"></div>
+        </div>
+      </div>
+
+      <!-- REVIEWS -->
+      <div class="page" id="page-reviews">
+        <div class="page-title">⭐ Review Responder</div>
+        <div class="page-sub">Paste any Google, Yelp, or Facebook review. Get a professional, human-sounding response in seconds.</div>
+
+        <div class="card">
+          <div class="card-header"><div class="card-title"><div class="card-icon">💬</div> Paste the Review</div></div>
+          <textarea rows="5" id="review-input" placeholder="Paste the customer review here...&#10;&#10;e.g. &quot;The food was cold and the service was really slow. I waited 45 minutes.&quot;"></textarea>
+          <div style="margin-top:16px">
+            <div class="s-label" style="margin-bottom:10px">Response Tone</div>
+            <div class="tone-grid" id="rv-tone-btns">
+              <button class="tone-btn on" onclick="selectRvTone(this)">Professional</button>
+              <button class="tone-btn" onclick="selectRvTone(this)">Friendly</button>
+              <button class="tone-btn" onclick="selectRvTone(this)">Witty</button>
+              <button class="tone-btn" onclick="selectRvTone(this)">Bold</button>
+              <button class="tone-btn" onclick="selectRvTone(this)">Casual</button>
+              <button class="tone-btn" onclick="selectRvTone(this)">Luxurious</button>
+            </div>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-blue" id="rv-btn" onclick="generateReview()">✍️ Generate Response</button>
+            <button class="btn btn-outline" id="rv-clear" style="display:none" onclick="clearReview()">Clear</button>
+          </div>
+        </div>
+
+        <div id="rv-output" style="display:none" class="output-card">
+          <div class="output-header">
+            <div style="display:flex;align-items:center;gap:10px">
+              Your Response
+              <span id="rv-sentiment" class="sentiment"></span>
+            </div>
+            <button class="copy-btn" onclick="copyReview()">Copy</button>
+          </div>
+          <div class="output-body" id="rv-text"></div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script>
+const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const DAYS_SHORT = ["Su","Mo","Tu","We","Th","Fr","Sa"];
+const DAYS_FULL = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+
+let images = [];
+let scheduledPosts = [];
+let calYear = new Date().getFullYear();
+let calMonth = new Date().getMonth();
+const today = new Date();
+
+// Tab switching
+function showTab(tab, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + tab).classList.add('active');
+  btn.classList.add('active');
+  if (tab === 'calendar') renderCalendar();
+  if (tab === 'schedule') updateSchedulePreview();
+  updateCalStats();
+}
+
+// Business
+function updateBizDisplay() {
+  const name = document.getElementById('biz-name').value;
+  document.getElementById('biz-display').textContent = name || 'Not set up yet';
+  if (name) {
+    document.getElementById('step-settings').textContent = '✓';
+    document.getElementById('nav-settings').classList.add('done');
+  }
+}
+
+// Tone
+function selectTone(btn) {
+  document.querySelectorAll('#tone-btns .tone-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+}
+
+function selectRvTone(btn) {
+  document.querySelectorAll('#rv-tone-btns .tone-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+}
+
+// Platforms
+function togglePlatform(btn) { btn.classList.toggle('on'); updateCalStats(); }
+
+// Days
+function toggleDay(btn) {
+  btn.classList.toggle('on');
+  updateSchedulePreview();
+  updateCalStats();
+}
+
+function getSelectedDays() {
+  return [...document.querySelectorAll('#day-btns .day-btn.on')].map(b => b.textContent);
+}
+
+// Schedule preview
+function updateSchedulePreview() {
+  const days = getSelectedDays();
+  const time = document.getElementById('post-time')?.value || '09:00';
+  const freq = document.getElementById('post-freq')?.value || 'Once a day';
+  const [h] = time.split(':');
+  const hr = parseInt(h); const ampm = hr >= 12 ? 'PM' : 'AM'; const h12 = hr % 12 || 12;
+  const min = time.split(':')[1];
+  const dayMap = {Su:'Sun',Mo:'Mon',Tu:'Tue',We:'Wed',Th:'Thu',Fr:'Fri',Sa:'Sat'};
+  const dayNames = days.map(d => dayMap[d]).join(', ');
+  document.getElementById('schedule-preview').textContent = days.length
+    ? `📅 Posts will go out every ${dayNames} at ${h12}:${min} ${ampm} — ${freq.toLowerCase()}.`
+    : '📅 Select at least one day to see your schedule.';
+}
+
+// Images
+function handleFiles(files) {
+  Array.from(files).forEach(f => {
+    const url = URL.createObjectURL(f);
+    images.push({ id: Math.random().toString(36).slice(2), url, used: false });
+  });
+  renderImages();
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('drop-zone').classList.remove('dragging');
+  handleFiles(e.dataTransfer.files);
+}
+
+function renderImages() {
+  const grid = document.getElementById('image-grid');
+  const avail = images.filter(i => !i.used).length;
+  grid.innerHTML = images.map(img => `
+    <div class="img-item ${img.used ? 'used' : ''}">
+      <img src="${img.url}" alt="" />
+      ${img.used ? '<div class="img-queued-label">✓ Queued</div>' : ''}
+    </div>
+  `).join('');
+  document.getElementById('q-total').textContent = images.length;
+  document.getElementById('q-ready').textContent = avail;
+  document.getElementById('q-used').textContent = images.length - avail;
+  document.getElementById('queue-summary').style.display = images.length ? 'block' : 'none';
+  document.getElementById('next-to-schedule').style.display = images.length ? 'inline-flex' : 'none';
+  document.getElementById('queue-badge').style.display = avail ? 'inline-flex' : 'none';
+  document.getElementById('queue-badge').textContent = avail + ' ready';
+  if (images.length) {
+    document.getElementById('step-queue').textContent = '✓';
+    document.getElementById('nav-queue').classList.add('done');
+  }
+}
+
+// Generate schedule
+async function generateSchedule() {
+  const avail = images.filter(i => !i.used);
+  if (!avail.length) {
+    document.getElementById('warn-banner').style.display = 'flex';
+    return;
+  }
+  const btn = document.getElementById('generate-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Generating posts…';
+
+  const days = getSelectedDays();
+  const dayMap = {Su:0,Mo:1,Tu:2,We:3,Th:4,Fr:5,Sa:6};
+  const idxs = days.map(d => dayMap[d]);
+  const dates = [];
+  const cur = new Date();
+  while (dates.length < Math.min(avail.length, 8)) {
+    if (idxs.includes(cur.getDay())) dates.push(new Date(cur));
+    cur.setDate(cur.getDate() + 1);
+  }
+
+  const bizName = document.getElementById('biz-name').value || 'a local business';
+  const bizDesc = document.getElementById('biz-desc').value || 'A friendly local business';
+  const tone = document.querySelector('#tone-btns .tone-btn.on')?.textContent || 'Friendly';
+  const platforms = [...document.querySelectorAll('.platform-btn.on')].map(b => b.textContent.trim()).join(', ');
+
+  const toSchedule = avail.slice(0, dates.length);
+
+  for (let i = 0; i < toSchedule.length; i++) {
+    try {
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 500,
+          messages: [{ role: 'user', content: `Write a social media caption for ${bizName}. Business: ${bizDesc}. Tone: ${tone}. Platforms: ${platforms}. Hook them in the first line. Include 1-2 emojis. End with 5 hashtags. Return ONLY the caption.` }]
+        })
+      });
+      const data = await res.json();
+      const caption = data.content?.[0]?.text || 'Caption coming soon...';
+      scheduledPosts.push({ id: Math.random().toString(36).slice(2), imgUrl: toSchedule[i].url, imgId: toSchedule[i].id, caption, date: dates[i], platforms });
+    } catch(e) {
+      scheduledPosts.push({ id: Math.random().toString(36).slice(2), imgUrl: toSchedule[i].url, imgId: toSchedule[i].id, caption: 'AI caption — connect API key to generate real captions.', date: dates[i], platforms });
+    }
+  }
+
+  images = images.map(img => toSchedule.find(u => u.id === img.id) ? {...img, used: true} : img);
+  renderImages();
+
+  document.getElementById('live-banner').style.display = 'flex';
+  document.getElementById('live-count').textContent = scheduledPosts.length;
+  document.getElementById('reset-btn').style.display = 'inline-flex';
+  document.getElementById('step-schedule').textContent = '✓';
+  document.getElementById('nav-schedule').classList.add('done');
+
+  btn.disabled = false;
+  btn.innerHTML = '⚡ Generate & Schedule Posts';
+  showTab('calendar', document.getElementById('nav-calendar'));
+}
+
+function resetSchedule() {
+  scheduledPosts = [];
+  images = images.map(i => ({...i, used: false}));
+  renderImages();
+  document.getElementById('live-banner').style.display = 'none';
+  document.getElementById('reset-btn').style.display = 'none';
+  document.getElementById('live-count').textContent = '0';
+}
+
+// Calendar
+function renderCalendar() {
+  document.getElementById('cal-month-label').textContent = `${MONTHS[calMonth]} ${calYear}`;
+  const first = new Date(calYear, calMonth, 1);
+  const last = new Date(calYear, calMonth + 1, 0);
+  const cells = [];
+  for (let i = 0; i < first.getDay(); i++) cells.push({ date: new Date(calYear, calMonth, i - first.getDay() + 1), current: false });
+  for (let d = 1; d <= last.getDate(); d++) cells.push({ date: new Date(calYear, calMonth, d), current: true });
+  while (cells.length % 7) { const p = cells[cells.length-1].date; const n = new Date(p); n.setDate(p.getDate()+1); cells.push({date:n,current:false}); }
+
+  const postsByDate = {};
+  scheduledPosts.forEach(p => { const k = p.date.toDateString(); postsByDate[k] = (postsByDate[k]||0)+1; });
+
+  const grid = document.getElementById('cal-grid');
+  grid.innerHTML = DAYS_FULL.map(d => `<div class="cal-day-name">${d.slice(0,2)}</div>`).join('') +
+    cells.map(({date, current}) => {
+      const k = date.toDateString();
+      const isToday = k === today.toDateString();
+      const count = postsByDate[k] || 0;
+      return `<div class="cal-cell ${current?'':'other'} ${isToday?'today':''} ${count?'has-post':''}">
+        <span>${date.getDate()}</span>
+        ${count ? '<div class="cal-dot"></div>' : ''}
+      </div>`;
+    }).join('');
+
+  // Posts list
+  if (scheduledPosts.length) {
+    document.getElementById('posts-list-card').style.display = 'block';
+    document.getElementById('posts-badge').textContent = '✓ ' + scheduledPosts.length + ' scheduled';
+    const time = document.getElementById('post-time')?.value || '09:00';
+    document.getElementById('posts-list').innerHTML = scheduledPosts.slice(0,6).map(p => `
+      <div class="post-item">
+        <img src="${p.imgUrl}" class="post-thumb" alt="" />
+        <div style="flex:1;min-width:0">
+          <div class="post-date">${p.date.toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'})} · ${time} · ${p.platforms}</div>
+          <div class="post-caption">${p.caption}</div>
+        </div>
+        <span class="badge badge-green">✓ Ready</span>
+      </div>
+    `).join('');
+  }
+}
+
+function updateCalStats() {
+  const avail = images.filter(i => !i.used).length;
+  const platforms = document.querySelectorAll('.platform-btn.on').length;
+  const days = getSelectedDays().length;
+  document.getElementById('cal-scheduled').textContent = scheduledPosts.length;
+  document.getElementById('cal-days').textContent = days;
+  document.getElementById('cal-platforms').textContent = platforms;
+  document.getElementById('cal-remaining').textContent = avail;
+}
+
+function prevMonth() { if (calMonth === 0) { calMonth = 11; calYear--; } else calMonth--; renderCalendar(); }
+function nextMonth() { if (calMonth === 11) { calMonth = 0; calYear++; } else calMonth++; renderCalendar(); }
+
+// Reviews
+async function generateReview() {
+  const review = document.getElementById('review-input').value.trim();
+  if (!review) return;
+  const btn = document.getElementById('rv-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Writing response…';
+
+  const bizName = document.getElementById('biz-name').value || 'a local business';
+  const tone = document.querySelector('#rv-tone-btns .tone-btn.on')?.textContent || 'Professional';
+  const lower = review.toLowerCase();
+  const neg = ['terrible','awful','worst','horrible','rude','bad','slow','cold','dirty','disappointed'];
+  const pos = ['great','amazing','excellent','love','best','wonderful','fantastic','perfect','friendly','delicious'];
+  const ns = neg.filter(w => lower.includes(w)).length;
+  const ps = pos.filter(w => lower.includes(w)).length;
+  const sentiment = ns > ps ? 'negative' : ps > ns ? 'positive' : 'neutral';
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 300,
+        messages: [{ role: 'user', content: `Write a review response for ${bizName}. Review: "${review}". Tone: ${tone}. Sentiment: ${sentiment}. ${sentiment==='negative'?'Apologize sincerely and offer to make it right.':'Express genuine gratitude.'} Sound fully human. 3-5 sentences. End with owner first name or "The Team". Return ONLY the response.` }]
+      })
+    });
+    const data = await res.json();
+    document.getElementById('rv-text').textContent = data.content?.[0]?.text || '';
+  } catch(e) {
+    document.getElementById('rv-text').textContent = 'Thank you for your feedback. We take all reviews seriously and will work to improve your experience. Please reach out to us directly so we can make this right. — The Team';
+  }
+
+  const sentEl = document.getElementById('rv-sentiment');
+  sentEl.textContent = sentiment === 'positive' ? '😊 Positive' : sentiment === 'negative' ? '😟 Negative' : '😐 Neutral';
+  sentEl.className = 'sentiment ' + (sentiment === 'positive' ? 's-pos' : sentiment === 'negative' ? 's-neg' : 's-neu');
+  document.getElementById('rv-output').style.display = 'block';
+  document.getElementById('rv-clear').style.display = 'inline-flex';
+
+  btn.disabled = false;
+  btn.innerHTML = '✍️ Generate Response';
+}
+
+function clearReview() {
+  document.getElementById('review-input').value = '';
+  document.getElementById('rv-output').style.display = 'none';
+  document.getElementById('rv-clear').style.display = 'none';
+}
+
+function copyReview() {
+  navigator.clipboard.writeText(document.getElementById('rv-text').textContent);
+  document.querySelector('.copy-btn').textContent = '✓ Copied!';
+  setTimeout(() => document.querySelector('.copy-btn').textContent = 'Copy', 1500);
+}
+
+// Init
+document.getElementById('post-time').addEventListener('input', updateSchedulePreview);
+document.getElementById('post-freq').addEventListener('change', updateSchedulePreview);
+updateSchedulePreview();
+renderCalendar();
+</script>
+</body>
+</html>
