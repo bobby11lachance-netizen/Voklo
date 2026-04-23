@@ -55,8 +55,8 @@
   .nav-links { display: flex; gap: 32px; }
 .nav-burger { display: none; background: none; border: none; color: white; font-size: 24px; cursor: pointer; }
 @media (max-width: 768px) {
-  .nav-burger { display: block; margin-left: auto; }
-  .nav-links { display: none; flex-direction: column; position: absolute; top: 60px; left: 0; right: 0; background: rgba(8,8,8,0.97); padding: 20px; gap: 20px; }
+  .nav-burger { display: block; }
+.nav-links { display: none; flex-direction: column; position: absolute; top: 60px; left: 0; right: 0; background: rgba(8,8,8,0.97); padding: 20px; gap: 20px; }
   .nav-links.open { display: flex; }
 }
   .nav-links a {
@@ -588,7 +588,7 @@
 
   /* ── MOBILE ── */
   @media (max-width: 768px) {
-    nav { padding: 16px 20px; }
+  nav { padding: 16px 20px; justify-content: space-between; }
     .nav-links { display: none; }
     .section, .pain-section, .how-section, .features-section, .pricing-section, .testimonials-section, .cta-section { padding: 70px 20px; }
     .pain-grid, .features-grid, .test-grid { grid-template-columns: 1fr; }
