@@ -53,6 +53,12 @@
   .nav-logo span { color: #60A5FA; }
 
   .nav-links { display: flex; gap: 32px; }
+.nav-burger { display: none; background: none; border: none; color: white; font-size: 24px; cursor: pointer; }
+@media (max-width: 768px) {
+  .nav-burger { display: block; }
+  .nav-links { display: none; flex-direction: column; position: absolute; top: 60px; left: 0; right: 0; background: rgba(8,8,8,0.97); padding: 20px; gap: 20px; }
+  .nav-links.open { display: flex; }
+}
   .nav-links a {
     color: rgba(255,255,255,0.6);
     text-decoration: none; font-size: 14px; font-weight: 500;
@@ -608,6 +614,7 @@
 <!-- NAVBAR -->
 <nav>
   <div class="nav-logo">Vok<span>lo</span></div>
+  <button class="nav-burger" onclick="document.querySelector('.nav-links').classList.toggle('open')" aria-label="Menu">☰</button>
   <div class="nav-links">
     <a href="#how">How it works</a>
     <a href="#features">Features</a>
