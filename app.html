@@ -1009,10 +1009,22 @@ async function initAuth() {
     currentUser = session.user;
     const isAdmin = ADMIN_EMAILS.includes(currentUser.email);
     if (!isAdmin) {
-      const { data: userData } = await sb.from('users').select('stripe_subscription_id').eq('id', currentUser.id).single();
-      if (!userData?.stripe_subscription_id) {
-        window.location.href = '/signup.html';
-        return;
+  const { data: userData } = await sb.from('users').select('stripe_subscription_id').eq('id', currentUser.id).single();
+  if (!userData?.stripe_subscription_id) {
+    window.location.href = '/signup.html';
+    return;
+  }
+  const subCheck = await fetch('https://voklo-proxy.bobby11lachance.workers.dev/check-subscription', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ subscriptionId: userData.stripe_subscription_id }),
+  });
+  const { active } = await subCheck.json();
+  if (!active) {
+    window.location.href = '/signup.html';
+    return;
+  }
+}
       }
     }
     loadUserData();
