@@ -1029,8 +1029,7 @@ async function initAuth() {
     }
     loadUserData();
   // Handle Instagram OAuth callback
-const urlParams = new URLSearchParams(window.location.search);
-const igCode = urlParams.get('code');
+const igCode = _igCode;
 if (igCode) {
   window.history.replaceState({}, '', '/app.html');
   fetch('https://voklo-proxy.bobby11lachance.workers.dev/instagram-token', {
@@ -1083,6 +1082,8 @@ async function signOut() {
 }
 
 // INIT
+const _igCode = new URLSearchParams(window.location.search).get('code');
+if (_igCode) window.history.replaceState({}, '', '/app.html');
 initAuth();
  
 updateSum();renderCal();renderDash();
