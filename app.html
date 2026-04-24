@@ -499,7 +499,7 @@ hr.div{border:none;border-top:1px solid var(--border);margin:16px 0}
                   <div style="font-size:12px;color:var(--text3)">Manage & schedule posts</div>
                 </div>
               </div>
-              <a href="https://www.instagram.com/oauth/authorize?force_reauth=true&client_id=1286111609681160&redirect_uri=https://www.getvoklo.com/app.html&response_type=code&scope=instagram_business_basic%2Cinstagram_business_manage_messages%2Cinstagram_business_manage_comments%2Cinstagram_business_content_publish%2Cinstagram_business_manage_insights" style="font-size:12px;font-weight:600;color:var(--accent);text-decoration:none;padding:7px 14px;border:1px solid var(--accent);border-radius:8px">Connect</a>
+              <a id="ig-connect-btn" href="https://www.instagram.com/oauth/authorize?force_reauth=true&client_id=1286111609681160&redirect_uri=https://www.getvoklo.com/app.html&response_type=code&scope=instagram_business_basic%2Cinstagram_business_manage_messages%2Cinstagram_business_manage_comments%2Cinstagram_business_content_publish%2Cinstagram_business_manage_insights" style="font-size:12px;font-weight:600;color:var(--accent);text-decoration:none;padding:7px 14px;border:1px solid var(--accent);border-radius:8px">Connect</a>
             </div>
           </div>
         </div>
@@ -1058,8 +1058,11 @@ async function loadUserData() {
       const tb = [...document.querySelectorAll('#str .tone')].find(b => b.textContent === data.tone);
       if (tb) tb.classList.add('on');
     }
-  }
-  updateQS();
+}
+    if (data.instagram_connected) {
+      const btn = document.getElementById('ig-connect-btn');
+      if (btn) { btn.textContent = 'Connected'; btn.style.color = '#22c55e'; btn.style.borderColor = '#22c55e'; btn.removeAttribute('href'); btn.style.cursor = 'default'; }
+    }  updateQS();
 }
 
 async function saveUserData() {
