@@ -1001,12 +1001,21 @@ let currentUser = null;
 
 async function initAuth() {
   const { data: { session } } = await sb.auth.getSession();
-  if (!session) {
-    window.location.href = '/login.html';
-    return;
-  }
-  currentUser = session.user;
-  loadUserData();
+  const ADMIN_EMAILS = ['bobby11lachance@gmail.com'];
+    if (!session) {
+      window.location.href = '/login.html';
+      return;
+    }
+    currentUser = session.user;
+    const isAdmin = ADMIN_EMAILS.includes(currentUser.email);
+    if (!isAdmin) {
+      const { data: userData } = await sb.from('users').select('stripe_subscription_id').eq('id', currentUser.id).single();
+      if (!userData?.stripe_subscription_id) {
+        window.location.href = '/signup.html';
+        return;
+      }
+    }
+    loadUserData();
 }
 
 async function loadUserData() {
