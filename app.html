@@ -1026,25 +1026,25 @@ async function initAuth() {
   }
 }
     }
-    loadUserData();
+loadUserData();
+
   // Handle Instagram OAuth callback
-const igCode = _igCode;
-if (igCode) {
-  window.history.replaceState({}, '', '/app.html');
-  fetch('https://voklo-proxy.bobby11lachance.workers.dev/instagram-token', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ code: igCode, userId: currentUser.id }),
-  })
-  .then(r => r.json())
-  .then(data => {
-    if (data.access_token) {
-      alert('Instagram connected successfully!');
-    } else {
-      alert('Instagram connection failed: ' + JSON.stringify(data));
-    }
-  });
-}
+  const igCode = _igCode;
+  if (igCode) {
+    fetch('https://voklo-proxy.bobby11lachance.workers.dev/instagram-token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code: igCode, userId: currentUser.id }),
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.access_token) {
+        alert('Instagram connected successfully!');
+      } else {
+        alert('Instagram connection failed: ' + JSON.stringify(data));
+      }
+    });
+  }
 }
 
 async function loadUserData() {
