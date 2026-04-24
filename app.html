@@ -1072,7 +1072,7 @@ if (igCode) {
   fetch('https://voklo-proxy.bobby11lachance.workers.dev/instagram-token', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ code: igCode }),
+    body: JSON.stringify({ code: igCode, userId: currentUser.id }),
   })
   .then(r => r.json())
   .then(async data => {
