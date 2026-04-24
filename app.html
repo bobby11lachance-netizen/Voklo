@@ -1053,6 +1053,24 @@ async function signOut() {
 
 // INIT
 initAuth();
+  // Handle Instagram OAuth callback
+const urlParams = new URLSearchParams(window.location.search);
+const igCode = urlParams.get('code');
+if (igCode) {
+  fetch('https://voklo-proxy.bobby11lachance.workers.dev/instagram-token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ code: igCode }),
+  })
+  .then(r => r.json())
+  .then(async data => {
+    if (data.access_token) {
+      await sb.from('users').update({ instagram_token: data.access_token, instagram_connected: true }).eq('id', currentUser.id);
+      window.history.replaceState({}, '', '/app.html');
+      alert('Instagram connected successfully!');
+    }
+  });
+}
 updateSum();renderCal();renderDash();
 </script>
 </body>
