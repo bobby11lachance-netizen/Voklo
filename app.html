@@ -952,7 +952,7 @@ async function genSched(){
   const np=[];
   for(let i=0;i<ts.length;i++){
     try{
-      const res=await fetch(PROXY,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:500,messages:[{role:'user',content:`Write a social media caption for ${biz}${desc?'. '+desc:''}. Tone: ${tone}. Platforms: ${plats}. Strong hook. 1-2 emojis. 5 hashtags. Return ONLY the caption.`}]})});
+      const res=await fetch(PROXY,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:500,messages:[{role:'user',content:`Write a social media caption for ${biz}${desc?'. '+desc:''}. Tone: ${tone}. Platforms: ${plats}. Strong hook. 1-2 emojis. 5 hashtags. Return ONLY the caption.`}]})});
       const d=await res.json();
       np.push({id:Math.random().toString(36).slice(2),imgUrl:ts[i].url,imgId:ts[i].id,caption:d.content?.[0]?.text||'Caption generated.',date:dates[i],platforms:plats});
     }catch(e){np.push({id:Math.random().toString(36).slice(2),imgUrl:ts[i].url,imgId:ts[i].id,caption:'Caption coming soon...',date:dates[i],platforms:plats})}
