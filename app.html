@@ -621,22 +621,37 @@ hr.div{border:none;border-top:1px solid var(--border);margin:16px 0}
         <div class="stat"><div class="stat-val" id="cr">0</div><div class="stat-lbl">Photos Left</div></div>
       </div>
       <div class="card">
-        <div class="cal-hdr">
-          <button class="cal-nav-btn" onclick="prevM()">← Prev</button>
-          <div class="cal-m" id="cml"></div>
-          <button class="cal-nav-btn" onclick="nextM()">Next →</button>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+            <div class="cal-hdr">
+              <button class="cal-nav-btn" onclick="prevM()">← Prev</button>
+              <div class="cal-m" id="cml"></div>
+              <button class="cal-nav-btn" onclick="nextM()">Next →</button>
+            </div>
+            <button class="btn" onclick="openAddEvent()">+ Add Event</button>
+          </div>
+          <div class="cgrid" id="cg"></div>
         </div>
-        <div class="cgrid" id="cg"></div>
-      </div>
-      <div class="card" id="cpc" style="display:none">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-          <div class="ctitle" style="margin-bottom:0">Upcoming Posts</div>
-          <span style="background:var(--green-dim);color:var(--green);font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px" id="cpb"></span>
+        <div class="card" id="event-form" style="display:none">
+          <div class="ctitle">Add Event</div>
+          <div class="field"><label class="lbl">Event Title</label><input type="text" id="ev-title" placeholder="e.g. Happy Hour, New Menu Launch"></div>
+          <div class="field"><label class="lbl">Date</label><input type="date" id="ev-date"></div>
+          <div class="field"><label class="lbl">Description</label><input type="text" id="ev-desc" placeholder="Details about this event..."></div>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button class="btn" onclick="saveEvent()">Save Event</button>
+            <button class="btn btn-ghost" onclick="document.getElementById('event-form').style.display='none'">Cancel</button>
+          </div>
         </div>
-        <div class="plist" id="cpl"></div>
-      </div>
-    </div>
-
+        <div class="card" id="events-list">
+          <div class="ctitle">Upcoming Events</div>
+          <div id="ev-list"><div class="empty"><div class="et">No events yet</div><div class="es">Add events to help AI generate better captions</div></div></div>
+        </div>
+        <div class="card" id="cpc" style="display:none">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+            <div class="ctitle" style="margin-bottom:0">Upcoming Posts</div>
+            <span style="background:var(--green-dim);color:var(--green);font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px" id="cpb"></span>
+          </div>
+          <div class="plist" id="cpl"></div>
+        </div>
     <!-- CAPTION WRITER -->
     <div class="page" id="page-captions">
       <div class="g2">
