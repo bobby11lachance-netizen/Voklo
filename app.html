@@ -968,7 +968,9 @@ async function genSched(){
   const np=[];
   for(let i=0;i<ts.length;i++){
     try{
-      const res=await fetch(PROXY,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:500,messages:[{role:'user',content:`Write a social media caption for ${biz}${desc?'. '+desc:''}. Tone: ${tone}. Platforms: ${plats}. Strong hook. 1-2 emojis. 5 hashtags. Return ONLY the caption.`}]})});
+      const nearestEvent = events.find(e=>new Date(e.date).toDateString()===dates[i].toDateString());
+        const eventContext = nearestEvent ? `There is an event that day: "${nearestEvent.title}". The caption should naturally promote or reference this event.` : 'No specific event today — write something natural and engaging based on what you see in the photo, like a real social media manager would. Could be about the food, the vibe, the experience, anything that feels authentic.';
+        const res=await fetch(PROXY,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:500,messages:[{role:'user',content:[{type:'image_url',image_url:{url:ts[i].url}},{type:'text',text:`You are a social media manager for ${biz}${desc?', '+desc:''}. Look at this photo and write an Instagram caption. ${eventContext} Tone: ${tone}. Use 1-2 emojis max. Only use hashtags occasionally, not every post. Write like a real human, not a marketing bot. Return ONLY the caption.`}]}]})});
       const d=await res.json();
       np.push({id:Math.random().toString(36).slice(2),imgUrl:ts[i].url,imgId:ts[i].id,caption:d.content?.[0]?.text||'Caption generated.',date:dates[i],platforms:plats});
     }catch(e){np.push({id:Math.random().toString(36).slice(2),imgUrl:ts[i].url,imgId:ts[i].id,caption:'Caption coming soon...',date:dates[i],platforms:plats})}
