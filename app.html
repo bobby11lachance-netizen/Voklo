@@ -546,7 +546,38 @@ hr.div{border:none;border-top:1px solid var(--border);margin:16px 0}
       </div>
     </div>
 </div>
-    <!-- SCHEDULER -->
+    <!-- PHOTO LIBRARY -->
+    <div class="page" id="page-library">
+      <div class="stats">
+        <div class="stat"><div class="stat-val" id="l-ph">0</div><div class="stat-lbl">Photos Ready</div></div>
+        <div class="stat"><div class="stat-val" id="l-sc">0</div><div class="stat-lbl">Scheduled</div></div>
+        <div class="stat"><div class="stat-val" id="l-tt">0</div><div class="stat-lbl">Total Photos</div></div>
+      </div>
+      <div class="card">
+        <div class="ctitle">Photo Library</div>
+        <div class="upload-area" id="ua" onclick="document.getElementById('fi').click()" ondragover="event.preventDefault()" ondrop="handleDrop(event)">
+          <div style="font-size:32px">📷</div>
+          <div style="font-weight:600;margin:8px 0 4px">Upload Photos</div>
+          <div style="font-size:13px;color:var(--text3)">Click or drag & drop photos here</div>
+        </div>
+        <input type="file" id="fi" accept="image/*" multiple style="display:none" onchange="handleFiles(this.files)">
+      </div>
+      <div class="card" id="lib-card2">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+          <div class="ctitle" style="margin-bottom:0">Your Photos</div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-ghost btn-sm" onclick="unqueueAll()">Unqueue All</button>
+            <button class="btn btn-danger btn-sm" onclick="clearAll()">Clear All</button>
+          </div>
+        </div>
+        <div class="lib-row">
+          <div class="lib-stat"><div class="ld" style="background:var(--accent)"></div><span id="lr">0 ready</span></div>
+          <div class="lib-stat"><div class="ld" style="background:var(--green)"></div><span id="lq">0 scheduled</span></div>
+          <div class="lib-stat"><div class="ld" style="background:var(--border2)"></div><span id="lt">0 total</span></div>
+        </div>
+        <div class="pgrid" id="pg"></div>
+      </div>
+    </div><!-- SCHEDULER -->
     <div class="page" id="page-schedule">
       <div id="slb" style="display:none" class="live live-go"><div class="pulse"></div>Automation live — <span id="spc">0</span> posts scheduled and queued</div>
       <div class="sched-g">
