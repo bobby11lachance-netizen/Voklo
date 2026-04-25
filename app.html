@@ -893,7 +893,7 @@ function unqueueAll(){photos=photos.map(p=>({...p,used:false}));renderLib()}
 async function handleFiles(files) {
       for(const file of files) {
         if(!file.type.startsWith('image/')) continue;
-        const path = `${currentUser.id}/${Date.now()}-${file.name}`;
+        const path = `${currentUser.id}/${Date.now()}-${file.name.replace(/\s+/g, '_')}`;
         const { error } = await sb.storage.from('photos').upload(path, file);
         if(error){ alert('Upload error: ' + error.message); continue; }
         const { data } = sb.storage.from('photos').getPublicUrl(path);
