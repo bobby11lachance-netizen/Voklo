@@ -577,7 +577,7 @@ hr.div{border:none;border-top:1px solid var(--border);margin:16px 0}
           <div class="lib-stat"><div class="ld" style="background:var(--green)"></div><span id="lq">0 scheduled</span></div>
           <div class="lib-stat"><div class="ld" style="background:var(--border2)"></div><span id="lt">0 total</span></div>
         </div>
-        <div class="pgrid" id="pg"></div>
+        <div class="pgrid" id="pg2"></div>
       </div>
     </div><!-- SCHEDULER -->
     <div class="page" id="page-schedule">
@@ -880,7 +880,7 @@ function renderLib(){
   document.getElementById('lq').textContent=us+' scheduled';
   document.getElementById('lt').textContent=photos.length+' total';
   document.getElementById('lib-card').style.display=photos.length?'block':'none';
-  document.getElementById('pg').innerHTML=photos.map(p=>`
+  document.getElementById('pg2').innerHTML=photos.map(p=>`
     <div class="pitem ${p.used?'queued':''}">
       <img src="${p.url}" alt=""/>
       ${p.used?'<div class="pstatus ps-s">Scheduled</div>':'<div class="pstatus ps-r">Ready</div>'}
