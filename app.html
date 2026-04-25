@@ -1009,7 +1009,7 @@ function renderSchedPosts(){
   document.getElementById('spl').innerHTML=posts.slice(0,5).map(p=>`
     <div class="pitem2">
       <img src="${p.photo_url||p.imgUrl}" class="pthumb" alt=""/>
-          <div style="flex:1;min-width:0"><div class="pmeta">${new Date(p.scheduled_at||p.date).toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})}
+          <div style="flex:1;min-width:0"><div class="pmeta">${p.scheduled_at||p.date ? new Date(p.scheduled_at||p.date).toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}) : 'No date'}
       <span class="pbadge pb-g">✓ Ready</span>
     </div>`).join('');
 }
