@@ -974,7 +974,8 @@ async function genSched(){
     }catch(e){np.push({id:Math.random().toString(36).slice(2),imgUrl:ts[i].url,imgId:ts[i].id,caption:'Caption coming soon...',date:dates[i],platforms:plats})}
   }
   photos=photos.map(p=>ts.find(u=>u.id===p.id)?{...p,used:true}:p);
-  posts=[...posts,...np];
+  await sb.from('posts').delete().eq('user_id',currentUser.id).eq('status','scheduled');
+    posts=[...np];
     for(const p of np){
       await sb.from('posts').insert({
         user_id: currentUser.id,
