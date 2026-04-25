@@ -573,9 +573,9 @@ hr.div{border:none;border-top:1px solid var(--border);margin:16px 0}
           </div>
         </div>
         <div class="lib-row">
-          <div class="lib-stat"><div class="ld" style="background:var(--accent)"></div><span id="lr">0 ready</span></div>
-          <div class="lib-stat"><div class="ld" style="background:var(--green)"></div><span id="lq">0 scheduled</span></div>
-          <div class="lib-stat"><div class="ld" style="background:var(--border2)"></div><span id="lt">0 total</span></div>
+          <div class="lib-stat"><div class="ld" style="background:var(--accent)"></div><span id="lr2">0 ready</span></div>
+          <div class="lib-stat"><div class="ld" style="background:var(--green)"></div><span id="lq2">0 scheduled</span></div>
+          <div class="lib-stat"><div class="ld" style="background:var(--border2)"></div><span id="lt2">0 total</span></div>
         </div>
         <div class="pgrid" id="pg2"></div>
       </div>
@@ -876,9 +876,9 @@ function drop(e){e.preventDefault();document.getElementById('dz').classList.remo
 
 function renderLib(){
   const av=photos.filter(p=>!p.used).length,us=photos.filter(p=>p.used).length;
-  document.getElementById('lr').textContent=av+' ready';
-  document.getElementById('lq').textContent=us+' scheduled';
-  document.getElementById('lt').textContent=photos.length+' total';
+  document.getElementById('lr2')?.textContent=av+' ready';
+    document.getElementById('lq2')?.textContent=us+' scheduled';
+    document.getElementById('lt2')?.textContent=photos.length+' total';
   document.getElementById('lib-card').style.display=photos.length?'block':'none';
   document.getElementById('pg2').innerHTML=photos.map(p=>`
     <div class="pitem ${p.used?'queued':''}">
