@@ -1262,7 +1262,7 @@ async function disconnectIG() {
   await sb.auth.signOut();
   window.location.href = '/login.html';
 }
-
+}
 // INIT
 const _igCode = new URLSearchParams(window.location.search).get('code');
 if (_igCode) window.history.replaceState({}, '', '/app.html');
