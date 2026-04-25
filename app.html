@@ -1257,6 +1257,7 @@ async function disconnectIG() {
       if (btn) { btn.textContent = 'Connect'; btn.style.color = 'var(--accent)'; btn.style.borderColor = 'var(--accent)'; btn.href = 'https://www.instagram.com/oauth/authorize?force_reauth=true&client_id=1286111609681160&redirect_uri=https://www.getvoklo.com/app.html&response_type=code&scope=instagram_business_basic%2Cinstagram_business_manage_messages%2Cinstagram_business_manage_comments%2Cinstagram_business_content_publish%2Cinstagram_business_manage_insights'; }
       if (dbtn) dbtn.style.display = 'none';
     }
+  }
 
   async function signOut() {
   await sb.auth.signOut();
