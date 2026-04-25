@@ -1060,6 +1060,7 @@ let calEvents = [];
     }function updateCalStats(){
   const av=photos.filter(p=>!p.used).length;
       loadEvents();
+      loadPhotos();
   document.getElementById('ct').textContent=posts.length;
   document.getElementById('cw').textContent=getDays().length;
   document.getElementById('cpl2').textContent=getPlats().length;
