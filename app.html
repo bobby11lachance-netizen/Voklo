@@ -876,12 +876,12 @@ function drop(e){e.preventDefault();document.getElementById('dz').classList.remo
 
 function renderLib(){
   const av=photos.filter(p=>!p.used).length,us=photos.filter(p=>p.used).length;
-  document.getElementById('lr')?.textContent=av+' ready';
-    document.getElementById('lq')?.textContent=us+' scheduled';
-    document.getElementById('lt')?.textContent=photos.length+' total';
-    document.getElementById('lr2')?.textContent=av+' ready';
-    document.getElementById('lq2')?.textContent=us+' scheduled';
-    document.getElementById('lt2')?.textContent=photos.length+' total';
+  if(document.getElementById('lr')) document.getElementById('lr').textContent=av+' ready';
+    if(document.getElementById('lq')) document.getElementById('lq').textContent=us+' scheduled';
+    if(document.getElementById('lt')) document.getElementById('lt').textContent=photos.length+' total';
+    if(document.getElementById('lr2')) document.getElementById('lr2').textContent=av+' ready';
+    if(document.getElementById('lq2')) document.getElementById('lq2').textContent=us+' scheduled';
+    if(document.getElementById('lt2')) document.getElementById('lt2').textContent=photos.length+' total';
   document.getElementById('lib-card').style.display=photos.length?'block':'none';
   document.getElementById('pg2').innerHTML=photos.map(p=>`
     <div class="pitem ${p.used?'queued':''}">
