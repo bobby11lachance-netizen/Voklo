@@ -1108,7 +1108,7 @@ function renderDash(){
   document.getElementById('d-dy').textContent=getDays().length;
   const time=document.getElementById('pt')?.value||'09:00';
   document.getElementById('d-posts').innerHTML=posts.length
-    ?posts.slice(0,3).map(p=>`<div class="pitem2"><img src="${p.imgUrl}" class="pthumb" alt=""/><div style="flex:1;min-width:0"><div class="pmeta">${p.date.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})} · ${time}</div><div class="pcap">${p.caption}</div></div></div>`).join('')
+    ?posts.slice(0,3).map(p=>`<div class="pitem2"><img src="${p.photo_url||p.imgUrl}" class="pthumb" alt=""/><div style="flex:1;min-width:0"><div class="pmeta">${p.scheduled_at||p.date ? new Date(p.scheduled_at||p.date).toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}) : 'No date'} · ${time}</div><div class="pcap">${p.caption}</div></div></div>`).join('')
     :`<div class="empty"><div class="ei">📅</div><div class="et">Nothing scheduled yet</div><div class="es">Head to <span class="el" onclick="navTo('schedule')">Scheduler</span> to get started</div></div>`;
 }
 
