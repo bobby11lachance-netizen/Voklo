@@ -1021,7 +1021,7 @@ function renderCal(){
   for(let i=0;i<first.getDay();i++)cells.push({date:new Date(calY,calM,i-first.getDay()+1),curr:false});
   for(let d=1;d<=last.getDate();d++)cells.push({date:new Date(calY,calM,d),curr:true});
   while(cells.length%7){const p=cells[cells.length-1].date,n=new Date(p);n.setDate(p.getDate()+1);cells.push({date:n,curr:false})}
-  const pd={};posts.forEach(p=>{const k=p.date.toDateString();pd[k]=(pd[k]||0)+1});
+  const pd={};posts.forEach(p=>{const k=new Date(p.scheduled_at||p.date).toDateString();pd[k]=(pd[k]||0)+1});
   document.getElementById('cg').innerHTML=
     ['Su','Mo','Tu','We','Th','Fr','Sa'].map(d=>`<div class="cdname">${d}</div>`).join('')+
     cells.map(({date,curr})=>{
