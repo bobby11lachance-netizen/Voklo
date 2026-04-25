@@ -959,6 +959,16 @@ async function genSched(){
   }
   photos=photos.map(p=>ts.find(u=>u.id===p.id)?{...p,used:true}:p);
   posts=[...posts,...np];
+    for(const p of np){
+      await sb.from('posts').insert({
+        user_id: currentUser.id,
+        photo_url: p.imgUrl,
+        caption: p.caption,
+        platform: getPlats()[0]||'Instagram',
+        scheduled_at: p.date,
+        status: 'scheduled'
+      });
+    }
   renderLib();renderSchedPosts();
   document.getElementById('slb').style.display='flex';
   document.getElementById('spc').textContent=posts.length;
