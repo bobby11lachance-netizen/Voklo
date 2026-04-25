@@ -275,7 +275,9 @@ textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-dim)
 .dz-sub{font-size:13px;color:var(--text3);font-weight:500}
 
 /* ── PHOTO GRID ── */
-.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px;margin-top:18px}
+.upload-area{border:2px dashed var(--border2);border-radius:12px;padding:40px 20px;text-align:center;cursor:pointer;transition:all 0.2s;margin-bottom:16px}
+    .upload-area:hover{border-color:var(--accent);background:var(--surface)}
+  .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px;margin-top:18px}
 .pitem{position:relative;border-radius:10px;overflow:hidden;aspect-ratio:1;border:1.5px solid var(--border);transition:all 0.15s;cursor:default}
 .pitem:hover{border-color:var(--border2)}
 .pitem.queued{opacity:0.4}
