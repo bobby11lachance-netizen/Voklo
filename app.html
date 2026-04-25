@@ -888,7 +888,30 @@ function renderLib(){
 
 function remPhoto(id){photos=photos.filter(p=>p.id!==id);renderLib();renderDash()}
 function unqueueAll(){photos=photos.map(p=>({...p,used:false}));renderLib()}
-function clearAll(){
+async function handleFiles(files) {
+      for(const file of files) {
+        if(!file.type.startsWith('image/')) continue;
+        const path = `${currentUser.id}/${Date.now()}-${file.name}`;
+        const { error } = await sb.storage.from('photos').upload(path, file);
+        if(error){ alert('Upload error: ' + error.message); continue; }
+        const { data } = sb.storage.from('photos').getPublicUrl(path);
+        const { error: dbError } = await sb.from('photos').insert({ user_id: currentUser.id, url: data.publicUrl, path });
+        if(dbError) console.error(dbError);
+      }
+      await loadPhotos();
+    }
+
+    function handleDrop(e) {
+      e.preventDefault();
+      handleFiles(e.dataTransfer.files);
+    }
+
+    async function loadPhotos() {
+      const { data } = await sb.from('photos').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false });
+      photos = data || [];
+      renderLib();
+      renderDash();
+    }function clearAll(){
   photos=[];posts=[];renderLib();renderDash();
   document.getElementById('slb').style.display='none';
   document.getElementById('npcard').style.display='none';
