@@ -876,7 +876,10 @@ function drop(e){e.preventDefault();document.getElementById('dz').classList.remo
 
 function renderLib(){
   const av=photos.filter(p=>!p.used).length,us=photos.filter(p=>p.used).length;
-  document.getElementById('lr2')?.textContent=av+' ready';
+  document.getElementById('lr')?.textContent=av+' ready';
+    document.getElementById('lq')?.textContent=us+' scheduled';
+    document.getElementById('lt')?.textContent=photos.length+' total';
+    document.getElementById('lr2')?.textContent=av+' ready';
     document.getElementById('lq2')?.textContent=us+' scheduled';
     document.getElementById('lt2')?.textContent=photos.length+' total';
   document.getElementById('lib-card').style.display=photos.length?'block':'none';
