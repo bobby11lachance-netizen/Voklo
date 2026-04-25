@@ -916,7 +916,21 @@ async function handleFiles(files) {
       photos = data || [];
       renderLib();
       renderDash();
-    }function clearAll(){
+    }
+
+    async function loadPosts() {
+      const { data } = await sb.from('posts').select('*').eq('user_id', currentUser.id).order('scheduled_at');
+      posts = data || [];
+      renderSchedPosts();
+      renderDash();
+      updateCalStats();
+      if(posts.length) {
+        document.getElementById('slb').style.display='flex';
+        document.getElementById('spc').textContent=posts.length;
+        document.getElementById('npcard').style.display='block';
+        document.getElementById('rb').style.display='flex';
+      }
+    }}function clearAll(){
   photos=[];posts=[];renderLib();renderDash();
   document.getElementById('slb').style.display='none';
   document.getElementById('npcard').style.display='none';
